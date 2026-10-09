@@ -1,0 +1,35 @@
+{
+  "tool": "built-in image_gen",
+  "expressions": [
+    {
+      "id": "haruki_surprised",
+      "person": "haruki",
+      "prompt": "Precise facial-expression-only edit of the supplied approved pixel art game sprite. Change ONLY eyes/eyebrows/mouth to the expression below. Lock ALL other pixels/features as closely as possible: same hair color/shape, face outline, skin palette, gaze direction/head angle, body position, clothes, tie, glasses if present, crop, canvas size/aspect, genuine transparency. Haruki has dark reddish-brown hair and a tightly fastened burgundy tie under closed collar; Saiji has dark midnight blue curly hair, black glasses, loose tie, open collar and faces SCREEN LEFT. Do not mirror or rotate. No hands, props, text, symbols, framing, background. Maintain chunky pixel art and hard edges, no gradients. Output one transparent PNG with same canvas as reference. Expression: SURPRISED: eyebrows raised, eyes noticeably wider, small open mouth. Timid startled reaction, not screaming."
+    },
+    {
+      "id": "haruki_thinking",
+      "person": "haruki",
+      "prompt": "Precise facial-expression-only edit of the supplied approved pixel art game sprite. Change ONLY eyes/eyebrows/mouth to the expression below. Lock ALL other pixels/features as closely as possible: same hair color/shape, face outline, skin palette, gaze direction/head angle, body position, clothes, tie, glasses if present, crop, canvas size/aspect, genuine transparency. Haruki has dark reddish-brown hair and a tightly fastened burgundy tie under closed collar; Saiji has dark midnight blue curly hair, black glasses, loose tie, open collar and faces SCREEN LEFT. Do not mirror or rotate. No hands, props, text, symbols, framing, background. Maintain chunky pixel art and hard edges, no gradients. Output one transparent PNG with same canvas as reference. Expression: TROUBLED / CONFUSED: inner eyebrows lifted and gently knitted, worried eyes, small downturned closed mouth. Timid uncertainty. No sweat icons."
+    },
+    {
+      "id": "haruki_confident",
+      "person": "haruki",
+      "prompt": "Precise facial-expression-only edit of the supplied approved pixel art game sprite. Change ONLY eyes/eyebrows/mouth to the expression below. Lock ALL other pixels/features as closely as possible: same hair color/shape, face outline, skin palette, gaze direction/head angle, body position, clothes, tie, glasses if present, crop, canvas size/aspect, genuine transparency. Haruki has dark reddish-brown hair and a tightly fastened burgundy tie under closed collar; Saiji has dark midnight blue curly hair, black glasses, loose tie, open collar and faces SCREEN LEFT. Do not mirror or rotate. No hands, props, text, symbols, framing, background. Maintain chunky pixel art and hard edges, no gradients. Output one transparent PNG with same canvas as reference. Expression: UNDERSTANDING / REASSURED: softly relaxed eyebrows and a small gentle closed-mouth smile, eyes open. Quiet relief, not cocky."
+    },
+    {
+      "id": "saiji_surprised",
+      "person": "saiji",
+      "prompt": "Precise facial-expression-only edit of the supplied approved pixel art game sprite. Change ONLY eyes/eyebrows/mouth to the expression below. Lock ALL other pixels/features as closely as possible: same hair color/shape, face outline, skin palette, gaze direction/head angle, body position, clothes, tie, glasses if present, crop, canvas size/aspect, genuine transparency. Haruki has dark reddish-brown hair and a tightly fastened burgundy tie under closed collar; Saiji has dark midnight blue curly hair, black glasses, loose tie, open collar and faces SCREEN LEFT. Do not mirror or rotate. No hands, props, text, symbols, framing, background. Maintain chunky pixel art and hard edges, no gradients. Output one transparent PNG with same canvas as reference. Expression: QUESTIONING / SKEPTICAL: one eyebrow raised, the other slightly lowered, narrowed analytical eyes, small slightly open questioning mouth. Preserve black-rimmed glasses exactly."
+    },
+    {
+      "id": "saiji_thinking",
+      "person": "saiji",
+      "prompt": "Precise facial-expression-only edit of the supplied approved pixel art game sprite. Change ONLY eyes/eyebrows/mouth to the expression below. Lock ALL other pixels/features as closely as possible: same hair color/shape, face outline, skin palette, gaze direction/head angle, body position, clothes, tie, glasses if present, crop, canvas size/aspect, genuine transparency. Haruki has dark reddish-brown hair and a tightly fastened burgundy tie under closed collar; Saiji has dark midnight blue curly hair, black glasses, loose tie, open collar and faces SCREEN LEFT. Do not mirror or rotate. No hands, props, text, symbols, framing, background. Maintain chunky pixel art and hard edges, no gradients. Output one transparent PNG with same canvas as reference. Expression: THOUGHTFUL: eyebrows gently knit, eyes slightly narrowed in concentration, mouth firmly closed, analytical and serious. No hands or props; preserve glasses."
+    },
+    {
+      "id": "saiji_confident",
+      "person": "saiji",
+      "prompt": "Precise facial-expression-only edit of the supplied approved pixel art game sprite. Change ONLY eyes/eyebrows/mouth to the expression below. Lock ALL other pixels/features as closely as possible: same hair color/shape, face outline, skin palette, gaze direction/head angle, body position, clothes, tie, glasses if present, crop, canvas size/aspect, genuine transparency. Haruki has dark reddish-brown hair and a tightly fastened burgundy tie under closed collar; Saiji has dark midnight blue curly hair, black glasses, loose tie, open collar and faces SCREEN LEFT. Do not mirror or rotate. No hands, props, text, symbols, framing, background. Maintain chunky pixel art and hard edges, no gradients. Output one transparent PNG with same canvas as reference. Expression: CONFIDENT: firm relaxed eyebrows, focused eyes and subtle asymmetric knowing closed-mouth smile. Rational conviction, not villainous. Preserve glasses."
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111015"><title>サイカチADV | 動作確認版 v0.12.0</title><style>
+:root{font-family:system-ui,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;color:#f2eadb;background:#111015}*{box-sizing:border-box}body{margin:0;overflow:hidden}button{font:inherit;cursor:pointer;touch-action:manipulation}#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#211f28}#scene{position:absolute;inset:0;background:linear-gradient(180deg,#292c3c 0 47%,#51483f 47% 50%,#322d31 50%);transition:opacity .2s}#scene:before{content:'';position:absolute;inset:9% 12% 44%;border:9px solid #151820;background:repeating-linear-gradient(90deg,#4b5161 0 20%,#272e39 20% 23%);box-shadow:0 0 0 8px #615a53}#scene.corridor{background:linear-gradient(125deg,#252934,#434452 58%,#28232d 58%)}#scene.corridor:before{inset:13% 26% 18% 30%;border:12px solid #171a22;background:linear-gradient(90deg,#47424b 50%,#312d39 50%)}.grain{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 5px,#0001 5px 6px)}.title{position:absolute;top:5%;left:7%;font-weight:900;letter-spacing:.15em;font-size:clamp(16px,2.8vw,36px);text-shadow:2px 2px #15131a}.location{position:absolute;top:12%;left:7%;font-size:clamp(12px,1.4vw,17px);opacity:.8}.tab{position:absolute;top:42%;z-index:3;padding:14px 12px;border:0;background:#efe5d4;color:#15141b;font-weight:900;writing-mode:vertical-rl;letter-spacing:.18em;min-width:46px;min-height:110px}.tab.left{left:0}.tab.right{right:0}.tab:disabled{opacity:.35}#targets{position:absolute;inset:0;pointer-events:none;z-index:2}.target{pointer-events:auto;position:absolute;border:2px dashed #edb9a5;background:#b14d3a66;color:white;font-weight:800;min-width:84px;min-height:54px;border-radius:8px;text-shadow:1px 1px #000;padding:8px}.target.selected{outline:4px solid #c95439}.target[data-id="shelf"]{left:58%;top:38%}.target[data-id="desk"]{left:22%;top:65%}.target[data-id="notice"]{left:52%;top:36%}.target[data-id="door"]{left:31%;top:66%}.actions{position:absolute;z-index:4;background:#efe5d4;color:#111015;padding:8px;display:flex;gap:8px;border-left:6px solid #bb4c35;max-width:70%;flex-wrap:wrap}.actions button,.panel button{border:0;background:#1b1b25;color:#f6eee1;padding:10px 16px;font-weight:700;min-height:44px}.dialogue{position:absolute;bottom:0;left:0;width:100%;min-height:32%;background:#08090bdc;border-top:4px solid #b44b35;padding:20px max(8%,40px) 22px;z-index:6}.speaker{color:#f4b39e;font-weight:900;margin-bottom:8px}.line{font-size:clamp(16px,2.2vw,24px);line-height:1.65;white-space:pre-wrap}.next{position:absolute;right:7%;bottom:12px;color:#f4b39e}.panel{position:absolute;z-index:5;inset:10% 12%;background:#eee5d7;color:#16141a;padding:25px;overflow:auto;box-shadow:12px 12px #b84e39}.panel h2{margin:0 0 20px}.panel button{display:block;margin:8px 0;min-width:190px;text-align:left}.panel .close{position:absolute;right:16px;top:10px;background:#b44b35}.hint{position:absolute;bottom:8px;left:10px;font-size:12px;opacity:.65;z-index:2}.deduction-choice{width:100%;margin:6px 0!important}.status{font-size:13px;line-height:1.5}.hidden{display:none!important}@media(max-height:420px){.dialogue{min-height:42%;padding:8px 8% 18px}.speaker{margin:0}.line{font-size:15px}.title{top:3%}.location{top:15%}.tab{top:32%;min-height:80px}.panel{inset:5% 10%;padding:12px 20px}.panel h2{margin:0 0 10px}}
+
+/* v0.3 dialogue layer */
+.dialogue{transform:translateY(105%);opacity:0;transition:transform .24s ease,opacity .24s ease;pointer-events:none;min-height:33%;padding:18px max(7%,38px) 24px;background:rgba(5,7,11,.83);border-top:0;}
+.dialogue.hidden{display:none!important}.dialogue.open{transform:translateY(0);opacity:1;pointer-events:auto}
+.speaker{display:inline-block;background:#efe5d4;color:#17151c;padding:4px 18px;transform:skew(-9deg);margin-bottom:9px;border-left:6px solid #b44b35}
+.line{font-size:clamp(15px,2vw,23px);line-height:1.55;max-height:calc(33dvh - 56px);overflow-y:auto;white-space:pre-wrap}
+.next{visibility:hidden;animation:blink .85s steps(2,start) infinite}.next.ready{visibility:visible}@keyframes blink{to{opacity:.25}}
+.portrait-rail{position:absolute;bottom:calc(33% + 5px);left:4%;display:flex;gap:9px;z-index:6;pointer-events:none}.portrait{border:2px solid #a09a95;background:#16171bcf;padding:6px 12px;font-weight:800;font-size:12px;opacity:.55}.portrait.active{opacity:1;border-color:#b94b37;color:#fff0de}
+#dialogueChoices{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}#dialogueChoices button{background:#eee5d7;color:#18151a;border:0;padding:8px 14px;min-height:40px;font-weight:800}
+#textControls{position:absolute;z-index:8;right:7%;top:5%;display:flex;gap:8px}#textControls button{background:#14151bcc;color:#f4e8d8;border:1px solid #b44b35;padding:7px 9px;font-size:12px}
+#textControls.hidden{display:none!important}
+@media(max-height:420px){.dialogue{min-height:42%;padding:8px 8% 15px}.line{font-size:14px;max-height:calc(42dvh - 38px)}.portrait-rail{bottom:calc(42% + 4px)}.speaker{margin-bottom:3px;padding:2px 12px}}
+@media(prefers-reduced-motion:reduce){.dialogue{transition:none}.next{animation:none}}
+
+/* v0.4 character presentation and branching dialogue */
+#characterStage{position:absolute;inset:14% 8% 33%;z-index:3;pointer-events:none;display:flex;justify-content:space-between;align-items:end}
+#characterStage.hidden{display:none!important}
+.character-card{width:min(23vw,190px);height:min(43vh,250px);background:linear-gradient(145deg,#3e4150,#15151d);border:3px solid #b54b36;box-shadow:8px 8px 0 #0b0a0b88;clip-path:polygon(0 0,92% 0,100% 12%,100% 100%,0 100%);display:flex;flex-direction:column;justify-content:end;align-items:center;gap:8px;padding:14px 6px;opacity:.48;transition:opacity .15s,transform .15s}
+.character-card.active{opacity:1;transform:translateY(-5px)}.character-card .avatar{font-size:clamp(38px,7vw,76px);filter:grayscale(.15)}.character-card .character-name{font-weight:900;letter-spacing:.1em}.character-card .emotion{font-size:12px;color:#ffd5bd}
+#dialogueChoices{position:relative;z-index:7;flex-direction:column;align-items:stretch;max-width:620px}#dialogueChoices button{width:100%;text-align:left;border-left:5px solid #b54b36;min-height:44px}
+@media(max-height:420px){#characterStage{inset:8% 8% 42%}.character-card{height:100%;width:120px;padding:4px}.character-card .avatar{font-size:35px}.character-card .emotion{font-size:10px}}
+
+/* v0.5 visual system: ink / paper / vermilion, responsive full-bleed */
+:root{--ink:#111219;--paper:#f1e9db;--red:#b63e31;--line:#d2c2a9;--shadow:#09090e}
+#game{background:var(--ink);isolation:isolate}
+#scene{image-rendering:pixelated;background:linear-gradient(180deg,#151a2b 0 17%,#34384c 17% 49%,#171c27 49% 54%,#39353b 54% 100%)}
+#scene:before{inset:12% 16% 39%;border:10px solid #141823;background:repeating-linear-gradient(90deg,#414657 0 17%,#161a25 17% 20%);box-shadow:0 0 0 12px #696052,0 12px 0 12px #1d1d29}
+#scene:after{content:'';position:absolute;bottom:0;left:0;right:0;height:25%;background:repeating-linear-gradient(90deg,#40363a 0 8%,#27242b 8% 9%);clip-path:polygon(0 35%,100% 15%,100% 100%,0 100%);opacity:.8}
+#scene.corridor{background:linear-gradient(105deg,#171b29 0 24%,#393c4a 24% 54%,#22202d 54% 100%)}
+#scene.corridor:before{inset:11% 28% 13% 29%;background:linear-gradient(90deg,#333440 49%,#171a23 49% 54%,#36313a 54%);box-shadow:0 0 0 8px #5b5350}
+#scene.corridor:after{background:repeating-linear-gradient(90deg,#2b2931 0 9%,#4b4242 9% 10%);height:23%}
+.grain{z-index:1;opacity:.38;pointer-events:none}
+.title{z-index:2;top:4%;left:6%;font-size:clamp(17px,3.2vw,40px);letter-spacing:.12em;color:var(--paper);line-height:1.1;filter:drop-shadow(2px 3px 0 #17141a)}
+.title:before{content:'SAIKACHI / 1996';display:block;font-size:clamp(8px,.9vw,11px);letter-spacing:.25em;color:#f5b6a4;margin-bottom:6px}
+.location{z-index:2;top:calc(5% + clamp(28px,4vw,53px));left:6%;background:var(--red);color:white;opacity:1;padding:4px 14px;transform:skew(-8deg);font-weight:800;letter-spacing:.14em;font-size:clamp(11px,1.3vw,15px)}
+.tab{z-index:8;top:40%;border:0;background:transparent;color:var(--paper);font-size:clamp(15px,1.6vw,20px);font-weight:900;min-width:54px;min-height:112px;padding:13px 15px;letter-spacing:.25em;text-shadow:2px 2px var(--shadow);transition:transform .12s,color .12s}
+.tab:before{content:'';position:absolute;inset:0;z-index:-1;background:var(--red);clip-path:polygon(0 0,100% 8%,100% 100%,0 92%)}
+.tab.left{left:0}.tab.right{right:0}.tab:hover,.tab:focus-visible{color:#fff;transform:scale(1.05)}
+#targets{z-index:3}.target{background:rgba(11,13,18,.28);border:1px solid rgba(245,225,207,.55);border-radius:0;color:var(--paper);text-shadow:1px 2px #000;min-width:88px;min-height:48px;box-shadow:inset 0 0 0 2px #16192355;backdrop-filter:blur(1px);font-size:clamp(12px,1.3vw,16px)}
+.target:before{content:'◇';color:#e6ad9b;margin-right:5px}.target.selected{border-color:var(--red);outline:2px solid var(--red);outline-offset:3px;background:#14121dc9}
+.actions{z-index:9;max-width:min(70%,420px);background:var(--paper);border:0;border-left:7px solid var(--red);padding:8px;box-shadow:7px 7px #101016aa;clip-path:polygon(0 0,97% 0,100% 15%,100% 100%,0 100%)}
+.actions button,.panel button{border:0;border-radius:0;background:var(--ink);color:var(--paper);min-height:44px;letter-spacing:.08em}
+.actions button:hover,.panel button:hover,.actions button:focus-visible,.panel button:focus-visible{background:var(--red);color:white}
+.dialogue{z-index:11;background:rgba(5,7,11,.80);padding:17px max(7%,32px) 23px;min-height:33%;border-top:2px solid rgba(231,218,198,.6);box-shadow:0 -12px 30px #090a1166}
+.dialogue:before{content:'';position:absolute;left:0;top:-6px;width:30%;height:5px;background:var(--red);transform:skew(-30deg)}
+.speaker{background:var(--paper);color:var(--ink);border-left:7px solid var(--red);font-size:clamp(12px,1.5vw,17px);letter-spacing:.1em}
+.line{color:var(--paper);font-size:clamp(15px,2.1vw,23px);line-height:1.55;letter-spacing:.03em}
+.next{color:#ed8e78;font-size:16px}
+.portrait-rail{left:5%;z-index:11}.portrait{background:#14151ad9;border:1px solid #c8b9a8;clip-path:polygon(0 0,92% 0,100% 20%,100% 100%,0 100%)}.portrait.active{border-color:var(--red);background:var(--red)}
+.panel{z-index:12;inset:8% 11%;padding:clamp(15px,3vw,34px);background:var(--paper);color:var(--ink);box-shadow:12px 12px 0 var(--red);border-top:7px solid var(--ink);clip-path:polygon(0 0,98% 0,100% 4%,100% 100%,0 100%)}
+.panel h2{font-weight:900;font-size:clamp(21px,3vw,36px);letter-spacing:.13em;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-right:65px}
+.panel button{max-width:100%;white-space:normal}.panel .close{position:sticky;float:right;right:0;top:0;background:var(--red);z-index:2}
+#dialogueChoices button{background:var(--paper);color:var(--ink);border-left:6px solid var(--red);min-height:44px;text-align:left}#dialogueChoices button:hover{background:#e5c9b7}
+#textControls{z-index:12}#textControls button{background:#13151bdc;border:1px solid #dfb5a4;color:var(--paper)}
+#characterStage{z-index:4;inset:12% 8% 33%}.character-card{border:0;border-left:6px solid var(--red);background:linear-gradient(145deg,#2e3446eb,#0d101ad9);clip-path:polygon(0 0,87% 0,100% 12%,100% 100%,0 100%)}.character-card.active{box-shadow:8px 8px 0 #a94032a8}.character-card .character-name{color:var(--paper)}
+.hint{z-index:2;left:6%;bottom:8px;color:var(--paper);background:#13151bb3;padding:4px 8px;max-width:85%}
+@media(max-height:460px){.title{top:3%;font-size:18px}.location{top:calc(3% + 27px)}.tab{top:35%;min-height:78px;min-width:44px;padding:8px 10px;font-size:13px}.dialogue{min-height:44%;padding:7px max(6%,24px) 14px}.line{font-size:14px;max-height:calc(44dvh - 38px)}.speaker{padding:1px 10px;margin-bottom:3px}.portrait-rail{bottom:calc(44% + 3px)}#characterStage{inset:8% 8% 44%}.panel{inset:4% 8%;padding:10px 17px}.panel h2{font-size:20px;margin-bottom:8px;padding-bottom:5px}.hint{display:none}}
+@media(max-width:650px){.panel{inset:6% 8%}.actions{max-width:75%}.title{left:8%}.location{left:8%}}
+@media(prefers-reduced-motion:reduce){.tab,.character-card{transition:none}}
+
+/* v0.6: pixel canvas, cover mapping and safe-area target placement */
+#scene{overflow:hidden;background-color:#181b28!important;background-image:none}
+#scene::before,#scene::after{display:none!important}
+#pixelScene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;image-rendering:crisp-edges}
+.target{transform:translate(-50%,-50%);min-width:72px;max-width:140px;min-height:44px;z-index:3}
+.tab.left{left:max(0px,env(safe-area-inset-left))}.tab.right{right:max(0px,env(safe-area-inset-right))}
+@media(max-height:380px){.target{font-size:12px;min-width:68px;min-height:44px}}
+
+/* v0.7 external portrait images; preserve left Haruki/right Saiji and fallback */
+.character-card{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.character-art{display:none;position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:auto;max-width:100%;object-fit:contain;image-rendering:pixelated;opacity:.72;pointer-events:none}
+.character-card.active .character-art{opacity:1}
+.character-card .character-name,.character-card .emotion{position:relative;z-index:2;text-shadow:1px 2px 2px #000;background:#151720b8;padding:2px 6px}
+.asset-fallback{position:absolute;top:12%;left:40%}
+</style></head><body><main id="game" aria-label="サイカチADV 動作確認版 v0.12.0"><div id="scene"><canvas id="pixelScene" width="320" height="180" aria-hidden="true"></canvas></div><div class="grain"></div><div class="title">皀角坂意匠學院</div><div class="location" id="location"></div><div id="targets"></div><div id="actions" class="actions hidden"></div><button id="move" class="tab left">いどう</button><button id="menu" class="tab right">メニュー</button><div class="hint">まず「いどう」「メニュー」または調査対象をタップ（仮シナリオ）</div><div id="characterStage" class="hidden" aria-hidden="true"><div id="harukiCard" class="character-card"><img class="character-art" id="harukiArt" alt="ハルキ"><span class="asset-fallback">ハルキ</span><span class="character-name">ハルキ</span><span class="emotion" id="harukiEmotion">通常</span></div><div id="saijiCard" class="character-card"><img class="character-art" id="saijiArt" alt="サイジ"><span class="asset-fallback">サイジ</span><span class="character-name">サイジ</span><span class="emotion" id="saijiEmotion">通常</span></div></div><div id="portraitRail" class="portrait-rail hidden"><span class="portrait" id="harukiFace">ハルキ</span><span class="portrait" id="saijiFace">サイジ</span></div><div id="textControls" class="hidden"><button id="speedButton" type="button">文字：ふつう</button><button id="autoButton" type="button">自動：OFF</button></div><div id="dialogue" class="dialogue hidden" role="dialog" aria-live="off"><div id="speaker" class="speaker"></div><div id="line" class="line"></div><div id="dialogueChoices"></div><span class="next" id="nextMark">▼</span></div><section id="panel" class="panel hidden" aria-label="メニュー"><button class="close" id="close">とじる</button><h2 id="panelTitle"></h2><div id="panelBody"></div></section></main><script src="data/scenario.js"></script><script src="data/events.js"></script><script src="data/saves.js"></script><script>
+ 'use strict';
+const SCENARIO=window.SAIKACHI_SCENARIO;
+if(!SCENARIO||!SCENARIO.rooms||!SCENARIO.investigations){throw new Error('シナリオファイル data/scenario.js が読み込めません');}
+const DATA={rooms:SCENARIO.rooms};
+
+// v0.7: external asset paths are replaceable; procedural backgrounds and emoji remain fallbacks.
+const ASSETS={resolution:{width:320,height:180},scenes:{
+ classroom:{background:'assets/backgrounds/classroom.png',targets:{shelf:{x:242,y:84},desk:{x:119,y:119}}},
+ corridor:{background:'assets/backgrounds/corridor.png',targets:{notice:{x:250,y:72},door:{x:145,y:104}}}
+},characters:{
+ haruki:{normal:'assets/characters/haruki_normal.png',surprised:'assets/characters/haruki_surprised.png',thinking:'assets/characters/haruki_thinking.png',confident:'assets/characters/haruki_confident.png'},
+ saiji:{normal:'assets/characters/saiji_normal.png',surprised:'assets/characters/saiji_surprised.png',thinking:'assets/characters/saiji_thinking.png',confident:'assets/characters/saiji_confident.png'}
+},emotionMap:{'通常':'normal','驚き':'surprised','困惑':'thinking','納得':'confident','思案':'thinking','疑問':'surprised','確信':'confident'},items:{'整理票の切れ端':{image:null}}};
+const imageCache=new Map();
+function loadImage(path){if(!path)return Promise.resolve(null);if(imageCache.has(path))return imageCache.get(path);const promise=new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>resolve(null);im.src=path});imageCache.set(path,promise);return promise}
+function setCharacterImage(id,emotion){const path=ASSETS.characters[id]?.[ASSETS.emotionMap[emotion]||'normal'];const img=$(id+'Art');if(!img)return;img.style.display='none';img.nextElementSibling.style.display='';loadImage(path).then(im=>{if(img.dataset.request!==path)return;if(im){img.src=path;img.style.display='block';img.nextElementSibling.style.display='none'}});img.dataset.request=path}
+function setSceneBackground(roomId){
+ const path=ASSETS.scenes[roomId]?.background,scene=$('scene');
+ if(scene.dataset.request!==path){scene.dataset.request=path;scene.style.backgroundImage='none';$('pixelScene').style.visibility='visible'}
+ if(!path)return;
+ loadImage(path).then(im=>{if(state.room!==roomId||scene.dataset.request!==path)return;
+  if(im){scene.style.backgroundImage=`url("${path}")`;scene.style.backgroundSize='cover';scene.style.backgroundPosition='center';$('pixelScene').style.visibility='hidden'}
+  else{scene.style.backgroundImage='none';$('pixelScene').style.visibility='visible'}
+ });
+}
+function coverGeometry(){const rect=$('scene').getBoundingClientRect(),w=ASSETS.resolution.width,h=ASSETS.resolution.height;const scale=Math.max(rect.width/w,rect.height/h);return {rect,scale,ox:(rect.width-w*scale)/2,oy:(rect.height-h*scale)/2}}
+function placeTarget(button,id){const target=ASSETS.scenes[state.room].targets[id];if(!target)return;const {rect,scale,ox,oy}=coverGeometry();const margin=50;const x=Math.max(margin,Math.min(rect.width-margin,ox+target.x*scale));const y=Math.max(36,Math.min(rect.height-30,oy+target.y*scale));button.style.left=x+'px';button.style.top=y+'px'}
+function drawScene(roomId){
+ const ctx=$('pixelScene').getContext('2d');ctx.imageSmoothingEnabled=false;
+ ctx.clearRect(0,0,320,180);ctx.fillStyle='#181b28';ctx.fillRect(0,0,320,180);
+}
+
+const state={mode:'exploration',room:SCENARIO.initial.room,flags:{...SCENARIO.initial.flags},inventory:[],visits:{[SCENARIO.initial.room]:1},completedEvents:{},selected:null,dialogue:[],lineIndex:0,afterDialogue:null,deductionStep:0,errors:0};
+const $=id=>document.getElementById(id), room=()=>DATA.rooms[state.room];
+const textSettings={speeds:[85,37,16,0],labels:['おそい','ふつう','はやい','一瞬'],index:1,auto:false};let typingTimer=null,autoTimer=null,typingDone=false,displayedChars=0,dialogueGeneration=0;
+function cancelTextTimers(){clearTimeout(typingTimer);clearTimeout(autoTimer);typingTimer=null;autoTimer=null}
+function closeDialogueLayer(){dialogueGeneration++;cancelTextTimers();$('characterStage').classList.add('hidden');$('dialogue').classList.remove('open');$('dialogue').classList.add('hidden');$('portraitRail').classList.add('hidden');$('textControls').classList.add('hidden')}
+function updateTextControls(){$('speedButton').textContent='文字：'+textSettings.labels[textSettings.index];$('autoButton').textContent='自動：'+(textSettings.auto?'ON':'OFF')}
+$('speedButton').onclick=e=>{e.stopPropagation();textSettings.index=(textSettings.index+1)%textSettings.speeds.length;updateTextControls();if(state.mode==='dialogue'&&!typingDone)displayLine()};
+$('autoButton').onclick=e=>{e.stopPropagation();textSettings.auto=!textSettings.auto;updateTextControls();scheduleAuto()};
+function scheduleAuto(){clearTimeout(autoTimer);if(textSettings.auto&&typingDone&&state.mode==='dialogue'&&!choicesPending&&!$('dialogueChoices').children.length)autoTimer=setTimeout(advance,1350)};updateTextControls();
+function render(){ $('location').textContent=room().name;$('scene').className=state.room==='corridor'?'corridor':''; drawScene(state.room);setSceneBackground(state.room);$('targets').innerHTML='';room().targets.forEach(t=>{const b=document.createElement('button');b.className='target'+(state.selected===t.id?' selected':'');b.dataset.id=t.id;b.textContent=t.name;placeTarget(b,t.id);b.addEventListener('click',e=>{e.stopPropagation();if(state.mode!=='exploration')return;state.selected=t.id;render();showActions(t.id)});$('targets').appendChild(b)});const explore=state.mode==='exploration';$('move').classList.toggle('hidden',!explore);$('menu').classList.toggle('hidden',!explore);if(!state.selected||!explore)$('actions').classList.add('hidden')}
+function showActions(id){const a=$('actions');a.innerHTML='';const b=document.querySelector('[data-id="'+id+'"]');for(const action of ['しらべる',...(id==='shelf'&&state.inventory.length?['しょうこをみせる']:[])]){const x=document.createElement('button');x.textContent=action;x.onclick=()=>action==='しらべる'?examine(id):showEvidence();a.appendChild(x)}a.classList.remove('hidden');const g=$('game').getBoundingClientRect(),r=b.getBoundingClientRect();a.style.left=Math.max(52,Math.min(r.left-g.left,g.width-a.offsetWidth-52))+'px';a.style.top=Math.max(8,Math.min(r.bottom-g.top+8,g.height-a.offsetHeight-8))+'px'}
+function say(lines,after=null){cancelTextTimers();state.mode='dialogue';state.dialogue=lines;state.lineIndex=0;state.afterDialogue=after;state.selected=null;$('panel').classList.add('hidden');$('actions').classList.add('hidden');$('dialogue').classList.remove('hidden');$('portraitRail').classList.remove('hidden');$('characterStage').classList.remove('hidden');$('textControls').classList.remove('hidden');const generation=++dialogueGeneration;requestAnimationFrame(()=>{if(generation===dialogueGeneration&&state.mode==='dialogue')$('dialogue').classList.add('open')});displayLine();render()}
+function displayLine(){cancelTextTimers();const v=state.dialogue[state.lineIndex];if(!v)return;const speaker=v[0],full=String(v[1]);$('speaker').textContent=speaker;$('line').textContent='';$('nextMark').classList.remove('ready');$('dialogueChoices').replaceChildren();$('harukiFace').classList.toggle('active',speaker==='ハルキ');$('saijiFace').classList.toggle('active',speaker==='サイジ');updateCharacterCards(speaker,v[2]||'通常');typingDone=false;displayedChars=0;const chars=Array.from(full);const speed=textSettings.speeds[textSettings.index];function tick(){if(state.mode!=='dialogue')return;displayedChars=Math.min(chars.length,displayedChars+1);$('line').textContent=chars.slice(0,displayedChars).join('');if(displayedChars<chars.length){typingTimer=setTimeout(tick,speed)}else{typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}}if(speed===0||matchMedia('(prefers-reduced-motion: reduce)').matches){$('line').textContent=full;displayedChars=chars.length;typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}else tick()}
+function onLineCompleted(){}
+function advance(){if(state.mode!=='dialogue')return;if(choicesPending)return;if(!typingDone){cancelTextTimers();$('line').textContent=state.dialogue[state.lineIndex][1];typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto();return}cancelTextTimers();state.lineIndex++;if(state.lineIndex>=state.dialogue.length){closeDialogueLayer();state.mode='exploration';const next=state.afterDialogue;state.afterDialogue=null;if(next)next();else render()}else displayLine()}
+const Events=window.SaikachiEvents;
+function runEvent(event){
+ if(!event||!Events.apply(event,state))return false;
+ const finish=()=>{
+  if(event.topic){playTopic(event.topic);return}
+  if(event.next){playTopic(event.next);return}
+  if(event.choices){showTopicChoices(event.choices);return}
+  closeDialogueLayer();state.mode='exploration';render();
+ };
+ if(event.lines&&event.lines.length)say(event.lines,finish);else finish();
+ return true;
+}
+function examine(id){
+ if(state.mode!=='exploration')return;
+ runEvent(Events.select(SCENARIO.investigations[id]||[],state));
+}
+function moveTo(id){
+ if(!DATA.rooms[id])return;
+ const changed=Events.enter(id,state);closePanel();
+ if(changed)runEvent(Events.select(DATA.rooms[id].onEnter||[],state));
+}
+let panelRevision=0;
+function panel(title,buttons){panelRevision++;state.mode='menu';state.selected=null;render();$('panelTitle').textContent=title;const body=$('panelBody');body.innerHTML='';buttons.forEach(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;body.appendChild(b)});$('panel').classList.remove('hidden')}
+function closePanel(){panelRevision++;state.mode='exploration';$('panel').classList.add('hidden');render()}
+// 工程18: 保存はメニューから手動で行い、復帰は探索状態に統一する。
+const Saves=window.SaikachiSaves.create(SCENARIO,()=>window.localStorage);
+function saveMessage(message,back=menu){
+ panel('セーブ・ロード',[['もどる',back]]);
+ const note=document.createElement('p');note.textContent=message;$('panelBody').appendChild(note);
+}
+function saveSlots(action){
+ const buttons=[];
+ try{
+  for(let slot=1;slot<=3;slot++){
+   const raw=Saves.raw(slot);let label='空き';
+   if(raw!==null){try{const saved=Saves.decode(raw);label=DATA.rooms[saved.progress.room].name+' / '+new Date(saved.savedAt).toLocaleString('ja-JP')}catch(e){label='読み込めないデータ'}}
+   buttons.push(['記録'+slot+'：'+label,()=>selectSaveSlot(action,slot)]);
+  }
+ }catch(e){saveMessage(e.message);return}
+ buttons.push(['もどる',menu]);panel(action==='save'?'セーブ':'ロード',buttons);
+ const note=document.createElement('p');note.textContent='このブラウザに保存します。別端末へ移すときは「セーブの持ち運び」を使ってください。';$('panelBody').appendChild(note);
+}
+function selectSaveSlot(action,slot){
+ const back=()=>saveSlots(action);
+ try{
+  if(action==='save'){
+   const snapshot=Saves.snapshot(state,textSettings);
+   const save=()=>{try{Saves.write(slot,snapshot);saveMessage('記録'+slot+'に保存しました。',back)}catch(e){saveMessage(e.message,back)}};
+   if(Saves.raw(slot)!==null)panel('記録'+slot+'を上書きしますか？',[['上書きする',save],['やめる',back]]);else save();
+  }else{
+   const saved=Saves.read(slot);
+   if(!saved){saveMessage('この記録にはまだ保存されていません。',back);return}
+   panel('記録'+slot+'から再開しますか？',[['再開する',()=>restoreSave(saved)],['やめる',back]]);
+   const note=document.createElement('p');note.textContent='現在の未保存の進行は失われます。';$('panelBody').appendChild(note);
+  }
+ }catch(e){saveMessage(e.message,back)}
+}
+function restoreSave(saved){panelRevision++;
+ let checked;try{checked=Saves.validate(saved)}catch(e){saveMessage(e.message);return}
+ // 検証を完了してから置換。入室イベントや訪問回数更新は呼び出さない。
+ closeDialogueLayer();choicesPending=false;typingDone=false;displayedChars=0;
+ $('dialogueChoices').replaceChildren();$('nextMark').classList.remove('ready');
+ Object.assign(state,checked.progress,{mode:'exploration',selected:null,dialogue:[],lineIndex:0,
+  afterDialogue:null,deductionStep:0,errors:0});
+ textSettings.index=checked.settings.textSpeed;textSettings.auto=checked.settings.auto;
+ updateTextControls();$('panel').classList.add('hidden');$('actions').classList.add('hidden');render();
+}
+
+// 工程19: ファイルは端末内で処理し、検証済みの1記録だけを受け渡す。
+function transferMenu(){
+ panel('セーブの持ち運び',[
+  ['今の進行を書き出す',()=>exportProgress()],
+  ['保存済みの記録を書き出す',exportSlots],
+  ['ファイルを読み込む',importPicker],['もどる',menu]
+ ]);
+ const note=document.createElement('p');note.textContent='JSONファイルとして保管できます。読み込み後に保存枠を選び、ロードから再開してください。';$('panelBody').appendChild(note);
+}
+function exportSlots(){
+ const buttons=[];
+ try{
+  for(let slot=1;slot<=3;slot++){
+   const value=Saves.raw(slot);let label='空き';
+   if(value!==null){try{const saved=Saves.decode(value);label=DATA.rooms[saved.progress.room].name+' / '+new Date(saved.savedAt).toLocaleString('ja-JP')}catch(e){label='読み込めないデータ'}}
+   buttons.push(['記録'+slot+'：'+label,()=>exportProgress(slot)]);
+  }
+ }catch(e){saveMessage(e.message,transferMenu);return}
+ buttons.push(['もどる',transferMenu]);panel('書き出す記録',buttons);
+}
+function exportProgress(slot){
+ let url=null,link=null;
+ try{
+  const saved=slot===undefined?Saves.snapshot(state,textSettings):Saves.read(slot);
+  if(!saved){saveMessage('この記録にはまだ保存されていません。',exportSlots);return}
+  const checked=Saves.validate(saved);
+  const blob=new Blob([JSON.stringify(checked,null,2)+'\n'],{type:'application/json;charset=utf-8'});
+  url=URL.createObjectURL(blob);link=document.createElement('a');link.href=url;
+  link.download='saikachi-save-'+(slot===undefined?'current':'slot'+slot)+'-'+checked.savedAt.replace(/[^0-9]/g,'')+'.json';
+  document.body.appendChild(link);link.click();
+  const release=url;setTimeout(()=>URL.revokeObjectURL(release),60000);url=null;
+  saveMessage('ファイルの書き出しをブラウザに依頼しました。ダウンロード先にJSONファイルがあるか確認してください。',transferMenu);
+ }catch(e){saveMessage('書き出せませんでした。'+e.message,transferMenu)}
+ finally{if(link)link.remove();if(url)URL.revokeObjectURL(url)}
+}
+function importPicker(){
+ panel('ファイルを読み込む',[['もどる',transferMenu]]);
+ const label=document.createElement('label');label.textContent='セーブのJSONファイルを選択（1MBまで）';
+ const input=document.createElement('input');input.type='file';input.accept='.json,application/json';
+ input.style.maxWidth='100%';input.style.display='block';input.style.marginTop='12px';
+ input.onchange=()=>{const file=input.files&&input.files[0];input.value='';if(file)readSaveFile(file)};
+ label.appendChild(input);$('panelBody').appendChild(label);
+}
+async function readSaveFile(file){
+ panel('ファイルを確認しています',[['やめる',transferMenu]]);
+ const request=panelRevision;
+ try{
+  if(file.size>1024*1024)throw new Error('ファイルが大きすぎます。1MB以下のセーブを選んでください。');
+  const text=await file.text();
+  if(request!==panelRevision)return;
+  if(text.length>1024*1024)throw new Error('ファイルが大きすぎます。');
+  const saved=Saves.decode(text.replace(/^\uFEFF/,''));
+  importPreview(saved);
+ }catch(e){if(request===panelRevision)saveMessage('読み込めませんでした。'+e.message,importPicker)}
+}
+function importPreview(saved){
+ // ボタンの操作で枠を確定するまでは、進行も保存領域も変更しない。
+ const checked=Saves.validate(saved);
+ const buttons=[];
+ try{
+  for(let slot=1;slot<=3;slot++){
+   const exists=Saves.raw(slot)!==null;
+   buttons.push(['記録'+slot+'に保存（'+(exists?'記録あり':'空き')+'）',()=>confirmImport(checked,slot)]);
+  }
+ }catch(e){saveMessage(e.message,transferMenu);return}
+ buttons.push(['やめる',transferMenu]);panel('読み込む記録の確認',buttons);
+ const note=document.createElement('p');note.textContent='場所：'+DATA.rooms[checked.progress.room].name+' / 保存日時：'+new Date(checked.savedAt).toLocaleString('ja-JP')+' / 持ち物：'+checked.progress.inventory.length+'点。現在のプレイは変更しません。';$('panelBody').appendChild(note);
+}
+function confirmImport(saved,slot){
+ try{
+  const exists=Saves.raw(slot)!==null;
+  panel('記録'+slot+'に'+(exists?'上書き':'保存')+'しますか？',[
+   [exists?'上書きする':'保存する',()=>{
+    try{Saves.write(slot,saved);saveMessage('記録'+slot+'に取り込みました。「ロード」から再開できます。',transferMenu)}catch(e){saveMessage(e.message,transferMenu)}
+   }],['やめる',()=>importPreview(saved)]
+  ]);
+ }catch(e){saveMessage(e.message,transferMenu)}
+}
+
+function menu(){panel('メニュー', [['セーブ',()=>saveSlots('save')],['ロード',()=>saveSlots('load')],['セーブの持ち運び',transferMenu],['もちもの',inventory],['ちょうさメモ',memo],['人物相関図（次工程）',()=>panel('人物相関図',['もどる'].map(x=>[x,menu]))],['メール（次工程）',()=>panel('メール',[['もどる',menu]])],['操作方法',()=>panel('操作方法',[['対象をタップ → しらべる',()=>{}],['証拠取得後：作品棚 → しょうこをみせる',()=>{}],['もどる',menu]])]])}
+function inventory(){panel('もちもの',state.inventory.length?state.inventory.map(item=>[item,()=>panel(item,[['整理票の一部。作品整理が行われたことを示している。',()=>{}],['もどる',inventory]])]).concat([['もどる',menu]]):[['まだ何も持っていない',()=>{}],['もどる',menu]])}
+function memo(){panel('ちょうさメモ',[['作品棚：'+(state.flags.shelfChecked?'空きがある':'未調査'),()=>{}],['掲示板：'+(state.flags.noticeChecked?'作品整理日の掲示':'未調査'),()=>{}],['整理票：'+(state.flags.foundClue?'発見済み':'未発見'),()=>{}],['推理：'+(state.flags.deductionDone?'完了':'未解決'),()=>{}],['もどる',menu]])}
+function showEvidence(){if(!state.inventory.length)return say([['ハルキ','見せられる証拠を持っていない。']]);panel('しょうこをみせる',state.inventory.map(item=>[item,()=>{closePanel();if(item==='整理票の切れ端'&&state.flags.noticeChecked){say([['ハルキ','整理票の切れ端と、掲示板の日付が一致する。'],['サイジ','ならば、ここから考えてみよう。']],startDeduction)}else say([['サイジ','今はこの証拠ではないようだ。']])}]).concat([['もどる',closePanel]]))}
+const questions=SCENARIO.questions;
+function startDeduction(){state.deductionStep=0;state.errors=0;deduction()}
+function deduction(){state.mode='deduction';render();$('panel').classList.remove('hidden');$('panelTitle').textContent='推理：ハルキ × サイジ';const q=questions[state.deductionStep],body=$('panelBody');body.innerHTML='';const heading=document.createElement('p');heading.textContent='サイジ「'+q.q+'」';body.appendChild(heading);q.opts.forEach((option,i)=>{const b=document.createElement('button');b.className='deduction-choice';b.textContent=(i+1)+'. '+option;b.onclick=()=>{if(i!==q.correct){state.errors++;heading.textContent='サイジ「その答えでは説明がつかない。もう一度考えよう。」'+(state.errors>=2?' ヒント：作品整理の記録に注目。':'');return}state.deductionStep++;if(state.deductionStep<questions.length)deduction();else{Events.apply({set:{deductionDone:true}},state);$('panel').classList.add('hidden');say([['ハルキ','作品が移動された可能性が高いんだね。'],['サイジ','ああ。ただし、これで紛失の真相が確定したわけじゃない。'],['ハルキ','試遊版の推理はここまで。']],null)}};body.appendChild(b)});const back=document.createElement('button');back.textContent='探索にもどる';back.onclick=closePanel;body.appendChild(back)}
+
+// v0.4: data-driven dialogue choices; placeholder portraits (not final character art)
+let choicesPending=false;
+const CHARACTER_EMOTIONS={ 'ハルキ':['通常','驚き','困惑','納得'], 'サイジ':['通常','思案','疑問','確信'] };
+function updateCharacterCards(speaker,emotion){
+  for(const [name,id] of [['ハルキ','haruki'],['サイジ','saiji']]){
+    $(id+'Card').classList.toggle('active',name===speaker);
+    const shown=CHARACTER_EMOTIONS[name].includes(emotion)?emotion:'通常';$(id+'Emotion').textContent=shown;setCharacterImage(id,shown);
+  }
+}
+const TOPIC_DIALOGUE=SCENARIO.topics;
+function startTopicDialogue(){playTopic('intro')}
+function playTopic(id){
+ choicesPending=false;
+ if(!runEvent(TOPIC_DIALOGUE[id])){closeDialogueLayer();state.mode='exploration';render()}
+}
+function showTopicChoices(choices){
+  cancelTextTimers();
+  choices=choices.filter(option=>Events.available(option,state));
+  if(!choices.length){choicesPending=false;closeDialogueLayer();state.mode='exploration';render();return}
+  // Choice UI belongs to the dialogue layer, not the exploration/menu overlay.
+  choicesPending=true;state.mode='dialogue';state.afterDialogue=null;
+  $('dialogue').classList.remove('hidden');$('dialogue').classList.add('open');
+  $('characterStage').classList.remove('hidden');$('portraitRail').classList.remove('hidden');
+  $('textControls').classList.remove('hidden');
+  $('speaker').textContent='サイジ';$('line').textContent='どうする？';$('nextMark').classList.remove('ready');
+  updateCharacterCards('サイジ','疑問');
+  const container=$('dialogueChoices');container.replaceChildren();
+  for(const option of choices){const b=document.createElement('button');b.type='button';b.textContent=option.label;b.onclick=e=>{e.stopPropagation();choicesPending=false;container.replaceChildren();runEvent(option)};container.appendChild(b)}
+  render();
+}
+
+$('move').onclick=()=>panel('いどう',Object.entries(DATA.rooms).map(([id,r])=>[r.name,()=>moveTo(id)]));$('menu').onclick=menu;$('close').onclick=closePanel;$('dialogue').onclick=e=>{if(e.target.closest('button'))return;advance()};$('game').addEventListener('click',e=>{if(e.target===$('scene')||e.target===$('pixelScene')||e.target===$('targets')||e.target.classList.contains('grain')){state.selected=null;$('actions').classList.add('hidden');render()}});window.addEventListener('resize',()=>{if(state.mode==='exploration'){render();if(state.selected)showActions(state.selected)}else{drawScene(state.room);setSceneBackground(state.room)}});document.addEventListener('keydown',e=>{if(e.isComposing)return;if((e.key==='Enter'||e.key===' ')&&state.mode==='dialogue'){if(e.target?.closest('button, input, textarea, select, [contenteditable]'))return;if(choicesPending)return;e.preventDefault();if(!e.repeat)advance()}else if(e.key==='Escape'&&['menu','deduction'].includes(state.mode))closePanel()});render();
+</script></body></html>

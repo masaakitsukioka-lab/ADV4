@@ -1,0 +1,24 @@
+
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const path=require('path');
+const out=path.resolve(__dirname,'..');
+const ctx={window:{}};vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(out+'/data/events.js','utf8'),ctx);
+const E=ctx.window.SaikachiEvents;
+const s={flags:{a:true,b:false},visits:{classroom:2},inventory:[],completedEvents:{},room:'classroom'};
+assert(E.matches({all:[{a:true},{not:{b:true}}],any:[{b:true},{a:true}]},s));
+assert(!E.matches({all:[{a:true},{b:true}]},s));
+assert(!E.matches({any:[]},s));
+assert(E.matches({visits:{classroom:{min:2,max:2}}},s));
+assert(!E.matches({visits:{classroom:{min:3}}},s));
+assert(E.apply({id:'test',once:true,set:{b:true},give:['item']},s));
+assert(!E.apply({id:'test',once:true,set:{b:false}},s));assert(s.flags.b);
+assert(E.matches({done:['test'],items:['item']},s));
+assert.throws(()=>E.apply({once:true},s));
+E.apply({give:['item']},s);assert.equal(s.inventory.length,1);
+assert(!E.enter('classroom',s));assert.equal(s.visits.classroom,2);
+assert(E.enter('corridor',s));assert.equal(s.visits.corridor,1);
+const dataCtx={window:{}};vm.createContext(dataCtx);
+vm.runInContext(fs.readFileSync(out+'/data/scenario.js','utf8'),dataCtx);
+assert.deepEqual(JSON.parse(JSON.stringify(dataCtx.window.SAIKACHI_SCENARIO)),JSON.parse(fs.readFileSync(out+'/data/scenario.json','utf8')));
+console.log('PASS: condition/effect/once/visit unit tests; scenario JS/JSON equality');

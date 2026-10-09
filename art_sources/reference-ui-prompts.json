@@ -1,0 +1,8 @@
+{
+  "mode": "built-in image_gen",
+  "reference": "廃校廊下の少女と赤い光.png",
+  "corridor": "Reference pixel-art dark teal/black shadows, desaturated stone, vermilion sunset. Preserve original corridor door at normalized .45,.58 and noticeboard at .78,.40. Background only, no girl, text or UI. Coarse pixel clusters and exposed high-ceiling pipes.",
+  "classroom": "Use reference dark abandoned-school pixel texture, vermilion sunset. Preserve original art classroom desk at .37,.66 and shelves at .76,.47. Background only, no characters or UI.",
+  "move": "Exact text いどう. Ivory heavy Japanese brush lettering, black wedge, vermilion distressed lower-left brush edge. Single isolated 3:1 transparent PNG, chunky pixel edges, no other content.",
+  "menu": "Exact text メニュー (メ,ニ,ュ,ー). First メ vermilion, ニュー ivory. Match generated move asset brush type and gritty pixels, black ink wedge, red underline and flecks toward right. Single isolated 3:1 transparent PNG."
+}

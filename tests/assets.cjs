@@ -16,7 +16,7 @@ vm.runInContext([...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1])
 const run=code=>vm.runInContext(code,ctx),assets=JSON.parse(run('JSON.stringify(ASSETS)'));
 const all=[];
 for(const room of ['classroom','corridor']){
- assert.equal(assets.scenes[room].background,reference.scenes[room].background);all.push([assets.scenes[room].background,320,180]);
+ assert.equal(assets.scenes[room].background,reference.scenes[room].background);all.push([assets.scenes[room].background,1672,941]);
  for(const [id,target] of Object.entries(assets.scenes[room].targets))assert.deepEqual([target.x,target.y],reference.scenes[room].targets[id]);
 }
 for(const person of ['haruki','saiji'])for(const mood of ['normal','surprised','thinking','confident']){

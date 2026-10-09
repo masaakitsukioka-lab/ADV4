@@ -67,5 +67,13 @@
     "整理票の切れ端": {
       "image": null
     }
+  },
+  "backgroundDimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "ui": {
+    "move": "assets/ui/move.png",
+    "menu": "assets/ui/menu.png"
   }
 }

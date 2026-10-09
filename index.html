@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111015"><title>サイカチADV | 動作確認版 v0.12.1</title><style>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111015"><title>サイカチADV | 動作確認版 v0.13.0</title><style>
 :root{font-family:system-ui,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;color:#f2eadb;background:#111015}*{box-sizing:border-box}body{margin:0;overflow:hidden}button{font:inherit;cursor:pointer;touch-action:manipulation}#game{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#211f28}#scene{position:absolute;inset:0;background:linear-gradient(180deg,#292c3c 0 47%,#51483f 47% 50%,#322d31 50%);transition:opacity .2s}#scene:before{content:'';position:absolute;inset:9% 12% 44%;border:9px solid #151820;background:repeating-linear-gradient(90deg,#4b5161 0 20%,#272e39 20% 23%);box-shadow:0 0 0 8px #615a53}#scene.corridor{background:linear-gradient(125deg,#252934,#434452 58%,#28232d 58%)}#scene.corridor:before{inset:13% 26% 18% 30%;border:12px solid #171a22;background:linear-gradient(90deg,#47424b 50%,#312d39 50%)}.grain{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 5px,#0001 5px 6px)}.title{position:absolute;top:5%;left:7%;font-weight:900;letter-spacing:.15em;font-size:clamp(16px,2.8vw,36px);text-shadow:2px 2px #15131a}.location{position:absolute;top:12%;left:7%;font-size:clamp(12px,1.4vw,17px);opacity:.8}.tab{position:absolute;top:42%;z-index:3;padding:14px 12px;border:0;background:#efe5d4;color:#15141b;font-weight:900;writing-mode:vertical-rl;letter-spacing:.18em;min-width:46px;min-height:110px}.tab.left{left:0}.tab.right{right:0}.tab:disabled{opacity:.35}#targets{position:absolute;inset:0;pointer-events:none;z-index:2}.target{pointer-events:auto;position:absolute;border:2px dashed #edb9a5;background:#b14d3a66;color:white;font-weight:800;min-width:84px;min-height:54px;border-radius:8px;text-shadow:1px 1px #000;padding:8px}.target.selected{outline:4px solid #c95439}.target[data-id="shelf"]{left:58%;top:38%}.target[data-id="desk"]{left:22%;top:65%}.target[data-id="notice"]{left:52%;top:36%}.target[data-id="door"]{left:31%;top:66%}.actions{position:absolute;z-index:4;background:#efe5d4;color:#111015;padding:8px;display:flex;gap:8px;border-left:6px solid #bb4c35;max-width:70%;flex-wrap:wrap}.actions button,.panel button{border:0;background:#1b1b25;color:#f6eee1;padding:10px 16px;font-weight:700;min-height:44px}.dialogue{position:absolute;bottom:0;left:0;width:100%;min-height:32%;background:#08090bdc;border-top:4px solid #b44b35;padding:20px max(8%,40px) 22px;z-index:6}.speaker{color:#f4b39e;font-weight:900;margin-bottom:8px}.line{font-size:clamp(16px,2.2vw,24px);line-height:1.65;white-space:pre-wrap}.next{position:absolute;right:7%;bottom:12px;color:#f4b39e}.panel{position:absolute;z-index:5;inset:10% 12%;background:#eee5d7;color:#16141a;padding:25px;overflow:auto;box-shadow:12px 12px #b84e39}.panel h2{margin:0 0 20px}.panel button{display:block;margin:8px 0;min-width:190px;text-align:left}.panel .close{position:absolute;right:16px;top:10px;background:#b44b35}.hint{position:absolute;bottom:8px;left:10px;font-size:12px;opacity:.65;z-index:2}.deduction-choice{width:100%;margin:6px 0!important}.status{font-size:13px;line-height:1.5}.hidden{display:none!important}@media(max-height:420px){.dialogue{min-height:42%;padding:8px 8% 18px}.speaker{margin:0}.line{font-size:15px}.title{top:3%}.location{top:15%}.tab{top:32%;min-height:80px}.panel{inset:5% 10%;padding:12px 20px}.panel h2{margin:0 0 10px}}
 
 /* v0.3 dialogue layer */
@@ -74,21 +74,73 @@
 .character-card.active .character-art{opacity:1}
 .character-card .character-name,.character-card .emotion{position:relative;z-index:2;text-shadow:1px 2px 2px #000;background:#151720b8;padding:2px 6px}
 .asset-fallback{position:absolute;top:12%;left:40%}
-/* v0.12.1: exploration commands stay at the upper corners. */
-.tab{top:max(8px,env(safe-area-inset-top));writing-mode:horizontal-tb;min-width:88px;min-height:48px;padding:12px 16px;font-size:16px;letter-spacing:.12em;background:var(--red);text-shadow:none;z-index:10}
-.tab:before{display:none}
-.tab.left{left:max(8px,env(safe-area-inset-left))}
-.tab.right{right:max(8px,env(safe-area-inset-right))}
-.tab:hover,.tab:focus-visible{transform:none;background:#923126}
-.tab:focus-visible{outline:3px solid var(--paper);outline-offset:-4px}
-.title{top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);max-width:calc(100% - 260px);text-align:center;font-size:clamp(17px,2.6vw,32px)}
-.location{top:calc(max(8px,env(safe-area-inset-top)) + 54px);left:50%;transform:translateX(-50%) skew(-8deg);max-width:calc(100% - 32px)}
-@media(max-width:600px){
- .title{top:calc(max(8px,env(safe-area-inset-top)) + 60px);max-width:calc(100% - 32px);width:max-content;font-size:18px}
- .title:before{display:none}
- .location{top:calc(max(8px,env(safe-area-inset-top)) + 88px);font-size:12px}
+/* Reference art direction: charcoal, old paper, vermilion and rough pixels. */
+:root{--ink:#070e10;--paper:#e9ddc3;--red:#da391c;--line:#afa389;--shadow:#020607;font-family:'Hiragino Mincho ProN','Yu Mincho',serif}
+#game{background:var(--ink)}
+.grain{opacity:.2;background:repeating-linear-gradient(0deg,transparent 0 3px,#0002 3px 4px)}
+.title{display:none}
+.location{top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:5px 12px;background:#071012ba;color:var(--paper);font-size:13px;letter-spacing:.14em;border-bottom:1px solid #b3a38555;max-width:44%;text-align:center}
+.tab{top:max(0px,env(safe-area-inset-top));width:clamp(128px,22vw,300px);height:clamp(62px,12vw,144px);min-width:0;min-height:48px;padding:0;border:0;background:none;color:transparent;font-size:0;writing-mode:horizontal-tb;z-index:10;transition:filter .12s;overflow:visible}
+.tab.left{left:max(0px,env(safe-area-inset-left))}.tab.right{right:max(0px,env(safe-area-inset-right))}
+.tab:before{display:none}.tab img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.tab:hover,.tab:focus-visible{transform:none;filter:brightness(1.18)}
+.tab:focus-visible{outline:2px solid var(--paper);outline-offset:-5px}
+.target{color:var(--paper);background:#080f1066;border:1px solid #b9ac8d55;box-shadow:none;backdrop-filter:none;opacity:.72;letter-spacing:.09em;font-size:clamp(12px,1.3vw,16px)}
+.target:before{content:'◇';color:var(--red)}
+.target:hover,.target:focus-visible,.target.selected{opacity:1;background:#061013c9;border-color:var(--red);outline:1px solid var(--red);outline-offset:2px}
+.actions{background:#091012ed;color:var(--paper);border:1px solid #ad9d7d;border-left:4px solid var(--red);box-shadow:4px 4px #020708bb;clip-path:none}
+.actions button,.panel button{font-family:inherit;background:#0c1719;color:var(--paper);border:1px solid #80786266;letter-spacing:.08em}
+.actions button:hover,.actions button:focus-visible,.panel button:hover,.panel button:focus-visible{background:#682319;outline:2px solid var(--red);outline-offset:-2px}
+.dialogue{left:1%;bottom:2%;width:98%;min-height:24%;max-height:70dvh;padding:clamp(17px,2.2vw,34px) clamp(20px,3vw,48px);display:grid;grid-template-columns:clamp(78px,10vw,160px) minmax(0,1fr);column-gap:clamp(18px,2.5vw,40px);align-content:start;background:#03090ce6;border:2px solid #b5a789;box-shadow:3px 3px #121b1b,-2px -2px #efe1ba33;overflow:auto;z-index:11;clip-path:polygon(1% 0,98.8% 0,100% 5%,100% 98%,99% 100%,0 100%,0 7%)}
+.dialogue:before{left:0;top:0;width:95px;height:28px;background:var(--red);transform:none;clip-path:polygon(0 0,100% 0,75% 18%,42% 32%,18% 60%,5% 100%,0 85%);pointer-events:none}
+.speaker{grid-column:1;grid-row:1;align-self:stretch;display:block;margin:0;padding:0 8px 0 0;transform:none;background:none;border:0;border-right:1px solid #b5a78988;color:var(--red);font-size:clamp(19px,2.2vw,32px);font-weight:900;letter-spacing:.08em}
+.line{grid-column:2;grid-row:1;max-height:30dvh;overflow:auto;font-family:inherit;color:var(--paper);font-size:clamp(16px,2.1vw,28px);line-height:1.65;letter-spacing:.06em;text-shadow:1px 1px #050708}
+.next{right:3%;bottom:12px;color:var(--red);font-size:24px}
+#dialogueChoices{grid-column:2;margin-top:12px;max-width:none}
+#dialogueChoices button{background:#10191ae8;color:var(--paper);border:1px solid #a3977b;border-left:4px solid var(--red);font-family:inherit}
+#dialogueChoices button:hover,#dialogueChoices button:focus-visible{background:#5d221b;outline:2px solid var(--paper);outline-offset:-2px}
+.portrait-rail{display:none!important}
+#characterStage{inset:20% 8% 25%;align-items:end;z-index:4}
+.character-card{width:min(24vw,260px);height:100%;border:0;background:none;clip-path:none;box-shadow:none!important;opacity:.72;overflow:visible;padding:0}
+.character-card.active{opacity:1;transform:none}
+.character-art{height:100%;max-width:100%;opacity:1;object-fit:contain;object-position:bottom;filter:saturate(.7) contrast(1.07)}
+.character-card .character-name,.character-card .emotion{display:none}
+.asset-fallback{left:0;top:auto;bottom:0;background:#0b1215;color:var(--paper);padding:5px 8px}
+#textControls{top:auto;right:2%;bottom:calc(26% + 10px);z-index:12}
+#textControls button{font-family:inherit;background:#080e11c9;border-color:#b8a68866;color:var(--paper);min-height:34px}
+.panel{inset:12% 12%;background:#071013f5;color:var(--paper);border:2px solid #b4a585;border-top:5px solid var(--red);box-shadow:6px 6px #030709aa;clip-path:none;font-family:inherit}
+.panel h2{border-color:#8d8069;color:var(--paper)}
+.panel .close{background:#8e2c1e;color:var(--paper)}
+.hint{font-family:inherit;color:#d7c9ad;opacity:.65;background:#050b10a8;font-size:11px;left:2%;bottom:2px;padding:3px 8px}
+@media(max-height:460px){
+ .tab{width:clamp(118px,21vw,180px);height:72px}
+ .location{top:8px;font-size:11px;max-width:45%}
+ .dialogue{min-height:27%;padding:15px 24px;grid-template-columns:76px minmax(0,1fr);column-gap:18px}
+ .speaker{font-size:20px}.line{font-size:16px;max-height:29dvh}
+ #characterStage{inset:15% 8% 29%}
+ #textControls{bottom:calc(29% + 10px)}
+ .panel{inset:8% 9%;padding:12px 20px}
 }
-</style></head><body><main id="game" aria-label="サイカチADV 動作確認版 v0.12.1"><div id="scene"><canvas id="pixelScene" width="320" height="180" aria-hidden="true"></canvas></div><div class="grain"></div><div class="title">皀角坂意匠學院</div><div class="location" id="location"></div><div id="targets"></div><div id="actions" class="actions hidden"></div><button id="move" class="tab left">いどう</button><button id="menu" class="tab right">メニュー</button><div class="hint">まず「いどう」「メニュー」または調査対象をタップ（仮シナリオ）</div><div id="characterStage" class="hidden" aria-hidden="true"><div id="harukiCard" class="character-card"><img class="character-art" id="harukiArt" alt="ハルキ"><span class="asset-fallback">ハルキ</span><span class="character-name">ハルキ</span><span class="emotion" id="harukiEmotion">通常</span></div><div id="saijiCard" class="character-card"><img class="character-art" id="saijiArt" alt="サイジ"><span class="asset-fallback">サイジ</span><span class="character-name">サイジ</span><span class="emotion" id="saijiEmotion">通常</span></div></div><div id="portraitRail" class="portrait-rail hidden"><span class="portrait" id="harukiFace">ハルキ</span><span class="portrait" id="saijiFace">サイジ</span></div><div id="textControls" class="hidden"><button id="speedButton" type="button">文字：ふつう</button><button id="autoButton" type="button">自動：OFF</button></div><div id="dialogue" class="dialogue hidden" role="dialog" aria-live="off"><div id="speaker" class="speaker"></div><div id="line" class="line"></div><div id="dialogueChoices"></div><span class="next" id="nextMark">▼</span></div><section id="panel" class="panel hidden" aria-label="メニュー"><button class="close" id="close">とじる</button><h2 id="panelTitle"></h2><div id="panelBody"></div></section></main><script src="data/scenario.js"></script><script src="data/events.js"></script><script src="data/saves.js"></script><script>
+@media(max-width:600px){
+ .tab{width:35%;height:78px}
+ .location{top:84px;max-width:80%;font-size:12px}
+ .dialogue{min-height:25%;padding:20px 17px;grid-template-columns:1fr;row-gap:9px}
+ .speaker{grid-column:1;grid-row:1;border-right:0;border-bottom:1px solid #b5a78977;padding-bottom:6px;font-size:21px}
+ .line{grid-column:1;grid-row:2;font-size:17px;max-height:27dvh}
+ #dialogueChoices{grid-column:1}
+ #characterStage{inset:27% 5% 28%}.character-card{width:40vw}
+ .panel{inset:15% 5%;padding:15px}.panel button{min-width:0;width:100%}.panel .close{width:auto}
+}
+@media(prefers-reduced-motion:reduce){.tab{transition:none}}
+
+.tab:disabled{opacity:.75;filter:none;cursor:default}
+.tab.asset-missing{color:var(--paper);font-size:clamp(22px,4vw,48px);background:#070e10e6;border-bottom:4px solid var(--red)}
+.tab.asset-missing img{display:none}.hint{display:none}
+#textControls{top:48px;bottom:auto;left:50%;right:auto;transform:translateX(-50%)}
+#textControls button{font-size:11px;min-height:28px;padding:4px 7px}
+@media(max-height:460px){#textControls{top:38px;bottom:auto}}
+@media(max-width:600px){#textControls{top:116px;bottom:auto}}
+</style></head><body><main id="game" aria-label="サイカチADV 動作確認版 v0.13.0"><div id="scene"><canvas id="pixelScene" width="320" height="180" aria-hidden="true"></canvas></div><div class="grain"></div><div class="title">皀角坂意匠學院</div><div class="location" id="location"></div><div id="targets"></div><div id="actions" class="actions hidden"></div><button id="move" class="tab left" type="button" aria-label="いどう"><img id="moveGraphic" src="assets/ui/move.png" alt="" aria-hidden="true">いどう</button><button id="menu" class="tab right" type="button" aria-label="メニュー"><img id="menuGraphic" src="assets/ui/menu.png" alt="" aria-hidden="true">メニュー</button><div class="hint">まず「いどう」「メニュー」または調査対象をタップ（仮シナリオ）</div><div id="characterStage" class="hidden" aria-hidden="true"><div id="harukiCard" class="character-card"><img class="character-art" id="harukiArt" alt="ハルキ"><span class="asset-fallback">ハルキ</span><span class="character-name">ハルキ</span><span class="emotion" id="harukiEmotion">通常</span></div><div id="saijiCard" class="character-card"><img class="character-art" id="saijiArt" alt="サイジ"><span class="asset-fallback">サイジ</span><span class="character-name">サイジ</span><span class="emotion" id="saijiEmotion">通常</span></div></div><div id="portraitRail" class="portrait-rail hidden"><span class="portrait" id="harukiFace">ハルキ</span><span class="portrait" id="saijiFace">サイジ</span></div><div id="textControls" class="hidden"><button id="speedButton" type="button">文字：ふつう</button><button id="autoButton" type="button">自動：OFF</button></div><div id="dialogue" class="dialogue hidden" role="dialog" aria-live="off"><div id="speaker" class="speaker"></div><div id="line" class="line"></div><div id="dialogueChoices"></div><span class="next" id="nextMark">▼</span></div><section id="panel" class="panel hidden" aria-label="メニュー"><button class="close" id="close">とじる</button><h2 id="panelTitle"></h2><div id="panelBody"></div></section></main><script src="data/scenario.js"></script><script src="data/events.js"></script><script src="data/saves.js"></script><script>
  'use strict';
 const SCENARIO=window.SAIKACHI_SCENARIO;
 if(!SCENARIO||!SCENARIO.rooms||!SCENARIO.investigations){throw new Error('シナリオファイル data/scenario.js が読み込めません');}
@@ -130,7 +182,7 @@ function updateTextControls(){$('speedButton').textContent='文字：'+textSetti
 $('speedButton').onclick=e=>{e.stopPropagation();textSettings.index=(textSettings.index+1)%textSettings.speeds.length;updateTextControls();if(state.mode==='dialogue'&&!typingDone)displayLine()};
 $('autoButton').onclick=e=>{e.stopPropagation();textSettings.auto=!textSettings.auto;updateTextControls();scheduleAuto()};
 function scheduleAuto(){clearTimeout(autoTimer);if(textSettings.auto&&typingDone&&state.mode==='dialogue'&&!choicesPending&&!$('dialogueChoices').children.length)autoTimer=setTimeout(advance,1350)};updateTextControls();
-function render(){ $('location').textContent=room().name;$('scene').className=state.room==='corridor'?'corridor':''; drawScene(state.room);setSceneBackground(state.room);$('targets').innerHTML='';room().targets.forEach(t=>{const b=document.createElement('button');b.className='target'+(state.selected===t.id?' selected':'');b.dataset.id=t.id;b.textContent=t.name;placeTarget(b,t.id);b.addEventListener('click',e=>{e.stopPropagation();if(state.mode!=='exploration')return;state.selected=t.id;render();showActions(t.id)});$('targets').appendChild(b)});const explore=state.mode==='exploration';$('move').classList.toggle('hidden',!explore);$('menu').classList.toggle('hidden',!explore);if(!state.selected||!explore)$('actions').classList.add('hidden')}
+function render(){ $('location').textContent=room().name;$('scene').className=state.room==='corridor'?'corridor':''; drawScene(state.room);setSceneBackground(state.room);$('targets').innerHTML='';room().targets.forEach(t=>{const b=document.createElement('button');b.className='target'+(state.selected===t.id?' selected':'');b.dataset.id=t.id;b.textContent=t.name;placeTarget(b,t.id);b.addEventListener('click',e=>{e.stopPropagation();if(state.mode!=='exploration')return;state.selected=t.id;render();showActions(t.id)});$('targets').appendChild(b)});const explore=state.mode==='exploration';$('targets').classList.toggle('hidden',!explore);const showCommands=explore||state.mode==='dialogue';for(const id of ['move','menu']){$(id).classList.toggle('hidden',!showCommands);$(id).disabled=!explore;$(id).title=explore?'':'会話が終わると操作できます'}if(!state.selected||!explore)$('actions').classList.add('hidden')}
 function showActions(id){const a=$('actions');a.innerHTML='';const b=document.querySelector('[data-id="'+id+'"]');for(const action of ['しらべる',...(id==='shelf'&&state.inventory.length?['しょうこをみせる']:[])]){const x=document.createElement('button');x.textContent=action;x.onclick=()=>action==='しらべる'?examine(id):showEvidence();a.appendChild(x)}a.classList.remove('hidden');const g=$('game').getBoundingClientRect(),r=b.getBoundingClientRect();a.style.left=Math.max(52,Math.min(r.left-g.left,g.width-a.offsetWidth-52))+'px';a.style.top=Math.max(8,Math.min(r.bottom-g.top+8,g.height-a.offsetHeight-8))+'px'}
 function say(lines,after=null){cancelTextTimers();state.mode='dialogue';state.dialogue=lines;state.lineIndex=0;state.afterDialogue=after;state.selected=null;$('panel').classList.add('hidden');$('actions').classList.add('hidden');$('dialogue').classList.remove('hidden');$('portraitRail').classList.remove('hidden');$('characterStage').classList.remove('hidden');$('textControls').classList.remove('hidden');const generation=++dialogueGeneration;requestAnimationFrame(()=>{if(generation===dialogueGeneration&&state.mode==='dialogue')$('dialogue').classList.add('open')});displayLine();render()}
 function displayLine(){cancelTextTimers();const v=state.dialogue[state.lineIndex];if(!v)return;const speaker=v[0],full=String(v[1]);$('speaker').textContent=speaker;$('line').textContent='';$('nextMark').classList.remove('ready');$('dialogueChoices').replaceChildren();$('harukiFace').classList.toggle('active',speaker==='ハルキ');$('saijiFace').classList.toggle('active',speaker==='サイジ');updateCharacterCards(speaker,v[2]||'通常');typingDone=false;displayedChars=0;const chars=Array.from(full);const speed=textSettings.speeds[textSettings.index];function tick(){if(state.mode!=='dialogue')return;displayedChars=Math.min(chars.length,displayedChars+1);$('line').textContent=chars.slice(0,displayedChars).join('');if(displayedChars<chars.length){typingTimer=setTimeout(tick,speed)}else{typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}}if(speed===0||matchMedia('(prefers-reduced-motion: reduce)').matches){$('line').textContent=full;displayedChars=chars.length;typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}else tick()}
@@ -322,5 +374,6 @@ function showTopicChoices(choices){
   render();
 }
 
+for(const id of ['move','menu']){$(id+'Graphic').addEventListener('error',()=>{$(id).classList.add('asset-missing')})}
 $('move').onclick=()=>panel('いどう',Object.entries(DATA.rooms).map(([id,r])=>[r.name,()=>moveTo(id)]));$('menu').onclick=menu;$('close').onclick=closePanel;$('dialogue').onclick=e=>{if(e.target.closest('button'))return;advance()};$('game').addEventListener('click',e=>{if(e.target===$('scene')||e.target===$('pixelScene')||e.target===$('targets')||e.target.classList.contains('grain')){state.selected=null;$('actions').classList.add('hidden');render()}});window.addEventListener('resize',()=>{if(state.mode==='exploration'){render();if(state.selected)showActions(state.selected)}else{drawScene(state.room);setSceneBackground(state.room)}});document.addEventListener('keydown',e=>{if(e.isComposing)return;if((e.key==='Enter'||e.key===' ')&&state.mode==='dialogue'){if(e.target?.closest('button, input, textarea, select, [contenteditable]'))return;if(choicesPending)return;e.preventDefault();if(!e.repeat)advance()}else if(e.key==='Escape'&&['menu','deduction'].includes(state.mode))closePanel()});render();
 </script></body></html>

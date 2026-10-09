@@ -154,15 +154,16 @@ const ASSETS={resolution:{width:320,height:180},scenes:{
  haruki:{normal:'assets/characters/haruki_normal.png',surprised:'assets/characters/haruki_surprised.png',thinking:'assets/characters/haruki_thinking.png',confident:'assets/characters/haruki_confident.png'},
  saiji:{normal:'assets/characters/saiji_normal.png',surprised:'assets/characters/saiji_surprised.png',thinking:'assets/characters/saiji_thinking.png',confident:'assets/characters/saiji_confident.png'}
 },emotionMap:{'通常':'normal','驚き':'surprised','困惑':'thinking','納得':'confident','思案':'thinking','疑問':'surprised','確信':'confident'},items:{'整理票の切れ端':{image:null}}};
+function sceneAssetURL(path){return path.startsWith('assets/backgrounds/')?path+'?v=0.13.0':path}
 const imageCache=new Map();
-function loadImage(path){if(!path)return Promise.resolve(null);if(imageCache.has(path))return imageCache.get(path);const promise=new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>resolve(null);im.src=path});imageCache.set(path,promise);return promise}
+function loadImage(path){if(!path)return Promise.resolve(null);if(imageCache.has(path))return imageCache.get(path);const promise=new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>resolve(null);im.src=sceneAssetURL(path)});imageCache.set(path,promise);return promise}
 function setCharacterImage(id,emotion){const path=ASSETS.characters[id]?.[ASSETS.emotionMap[emotion]||'normal'];const img=$(id+'Art');if(!img)return;img.style.display='none';img.nextElementSibling.style.display='';loadImage(path).then(im=>{if(img.dataset.request!==path)return;if(im){img.src=path;img.style.display='block';img.nextElementSibling.style.display='none'}});img.dataset.request=path}
 function setSceneBackground(roomId){
  const path=ASSETS.scenes[roomId]?.background,scene=$('scene');
  if(scene.dataset.request!==path){scene.dataset.request=path;scene.style.backgroundImage='none';$('pixelScene').style.visibility='visible'}
  if(!path)return;
  loadImage(path).then(im=>{if(state.room!==roomId||scene.dataset.request!==path)return;
-  if(im){scene.style.backgroundImage=`url("${path}")`;scene.style.backgroundSize='cover';scene.style.backgroundPosition='center';$('pixelScene').style.visibility='hidden'}
+  if(im){scene.style.backgroundImage=`url("${sceneAssetURL(path)}")`;scene.style.backgroundSize='cover';scene.style.backgroundPosition='center';$('pixelScene').style.visibility='hidden'}
   else{scene.style.backgroundImage='none';$('pixelScene').style.visibility='visible'}
  });
 }

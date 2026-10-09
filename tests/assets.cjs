@@ -9,7 +9,7 @@ class Element{
  getContext(){return {clearRect(){},fillRect(){}}}get nextElementSibling(){return this.next||(this.next=new Element())}
 }
 const elements={},document={getElementById:id=>elements[id]||(elements[id]=new Element()),createElement:()=>new Element(),addEventListener(){}};
-class Image{set src(value){this.path=value;requests.push(this)}}
+class Image{set src(value){this.path=value.split("?")[0];requests.push(this)}}
 const ctx={window:{addEventListener(){}},document,Image,setTimeout:()=>1,clearTimeout(){},requestAnimationFrame:fn=>fn(),matchMedia:()=>({matches:true})};vm.createContext(ctx);
 for(const file of ['scenario','events','saves'])vm.runInContext(fs.readFileSync(base+'/data/'+file+'.js','utf8'),ctx);
 vm.runInContext([...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n'),ctx);

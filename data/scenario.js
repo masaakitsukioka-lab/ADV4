@@ -1,7 +1,7 @@
 // file://対応。scenario.jsonと同内容です。
 window.SAIKACHI_SCENARIO = {
   "meta": {
-    "version": "0.12.1",
+    "version": "0.13.0",
     "scenario": "消えたスケッチ（仮）",
     "note": "本編の確定シナリオではありません",
     "id": "missing-sketch-demo",

@@ -25,7 +25,10 @@
    if(!object(p)||typeof p.room!=='string'||!own(scenario.rooms,p.room)||!object(p.flags)||!object(p.visits)||
       !object(p.completedEvents)||!Array.isArray(p.inventory)||!object(settings))fail();
    const flags={...scenario.initial.flags},visits={},completedEvents={};
-   for(const key of Object.keys(scenario.initial.flags))if(!own(p.flags,key))fail();
+   const discoveryFlags=new Set(scenario.commands?.discoveryFlags||[]);
+   for(const key of Object.keys(scenario.initial.flags))if(!own(p.flags,key)&&!discoveryFlags.has(key))fail();
+   const legacyDiscoveries={layoutSeen:!!p.flags.layoutChecked,noticeSeen:!!p.flags.dutyChecked,personNakako:!!p.flags.introSeen,personOkabo:!!(p.flags.layoutChecked||p.flags.dutyChecked||p.flags.okaboChecked),personCulprit:!!p.flags.introSeen};
+   for(const key of discoveryFlags)if(!own(p.flags,key))flags[key]=legacyDiscoveries[key]||false;
    for(const [k,v] of Object.entries(p.flags)){
     if(!safe(k)||!flagTypes.has(k)||typeof v!==flagTypes.get(k)||
        !['boolean','string','number'].includes(typeof v)||

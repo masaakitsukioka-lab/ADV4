@@ -1,0 +1,27 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "reference": "assets/ui/menu.png",
+  "assets": [
+    {
+      "path": "assets/ui/location-classroom.png",
+      "text": "美術準備室",
+      "prompt": "Create a transparent Japanese game location badge matching the menu reference: heavy brushy gothic Japanese lettering, ivory letters with vermilion accent, charcoal/red rough paint, distressed pixel edges. Exact text 美術準備室 only, one line."
+    },
+    {
+      "path": "assets/ui/location-corridor.png",
+      "text": "旧校舎廊下",
+      "prompt": "Create a transparent Japanese game location badge matching the menu reference: heavy brushy gothic Japanese lettering, ivory letters with vermilion accent, charcoal/red rough paint, distressed pixel edges. Exact text 旧校舎廊下 only, one line."
+    },
+    {
+      "path": "assets/ui/name-haruki.png",
+      "text": "ハルキ",
+      "prompt": "Transparent Japanese detective-game speaker name: exact ハルキ only. Each katakana cut from a different newspaper headline, pasted as a ransom-note collage. Uneven ivory newsprint scraps, bold black and vermilion ink, small rotations, one readable horizontal row."
+    },
+    {
+      "path": "assets/ui/name-saiji.png",
+      "text": "サイジ",
+      "prompt": "Transparent Japanese detective-game speaker name: exact サイジ only. Each katakana cut from a different newspaper headline, pasted as a ransom-note collage. Uneven ivory newsprint scraps, bold black and vermilion ink, small rotations, one readable horizontal row."
+    }
+  ]
+}

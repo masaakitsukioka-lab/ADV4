@@ -155,7 +155,113 @@
 @media(max-width:600px) and (orientation:portrait){.answer-groups{grid-template-columns:1fr;gap:10px}#targets{display:grid;grid-template-columns:1fr 1fr;align-content:center;gap:22px;padding:140px 22px 30px}.target{position:static;transform:none;min-width:0;max-width:none;min-height:48px!important}#opening{justify-content:safe center}}
 @media(max-height:460px){#opening p{font-size:16px;line-height:1.65;margin:8px 0 14px}#opening h1{font-size:30px}.answer-groups{margin:8px 0}.panel .evidence-note{font-size:15px}}
 .panel .close{min-width:0;width:auto;padding:8px 14px}.answer-status:empty{display:none}
-</style></head><body><main id="game" aria-label="サイカチADV 消えたスケッチ 試作版 v0.14.0"><div id="scene"><canvas id="pixelScene" width="320" height="180" aria-hidden="true"></canvas></div><div class="grain"></div><div class="title">皀角坂意匠學院</div><div class="location" id="location"></div><div id="targets"></div><div id="actions" class="actions hidden"></div><button id="move" class="tab left" type="button" aria-label="いどう"><img id="moveGraphic" src="assets/ui/move.png" alt="" aria-hidden="true">いどう</button><button id="menu" class="tab right" type="button" aria-label="メニュー"><img id="menuGraphic" src="assets/ui/menu.png" alt="" aria-hidden="true">メニュー</button><div class="hint">まず「いどう」「メニュー」または調査対象をタップ（仮シナリオ）</div><div id="characterStage" class="hidden" aria-hidden="true"><div id="harukiCard" class="character-card"><img class="character-art" id="harukiArt" alt="ハルキ"><span class="asset-fallback">ハルキ</span><span class="character-name">ハルキ</span><span class="emotion" id="harukiEmotion">通常</span></div><div id="saijiCard" class="character-card"><img class="character-art" id="saijiArt" alt="サイジ"><span class="asset-fallback">サイジ</span><span class="character-name">サイジ</span><span class="emotion" id="saijiEmotion">通常</span></div></div><div id="portraitRail" class="portrait-rail hidden"><span class="portrait" id="harukiFace">ハルキ</span><span class="portrait" id="saijiFace">サイジ</span></div><div id="textControls" class="hidden"><button id="speedButton" type="button">文字：ふつう</button><button id="autoButton" type="button">自動：OFF</button></div><div id="dialogue" class="dialogue hidden" role="dialog" aria-live="off"><div id="speaker" class="speaker"></div><div id="line" class="line"></div><div id="dialogueChoices"></div><span class="next" id="nextMark">▼</span></div><section id="panel" class="panel hidden" aria-label="メニュー"><button class="close" id="close">とじる</button><h2 id="panelTitle"></h2><div id="panelBody"></div></section><section id="opening" aria-label="消えたスケッチ オープニング"><h1 id="openingTitle"></h1><p id="openingText"></p><div class="opening-actions" id="openingActions"></div></section></main><script src="data/scenario.js"></script><script src="data/events.js"></script><script src="data/saves.js"></script><script>
+
+/* Command windows: charcoal message frame, doubled borders and overlapping panes. */
+#commandWindows{position:absolute;inset:0;z-index:9;pointer-events:none}
+.command-window{position:absolute;pointer-events:auto;color:var(--paper);background:#03090ce8;border:2px solid #b5a789;border-radius:14px;box-shadow:0 0 0 3px #071013,0 0 0 4px #e9ddc377,6px 7px 0 #020607a8;padding:16px 18px;overflow:auto;max-height:calc(100dvh - 155px)}
+.command-window:before{content:'';position:absolute;left:8px;top:8px;bottom:8px;width:1px;background:#b5a78966;pointer-events:none}
+#commandMain{top:clamp(85px,18vh,155px);left:5%;width:230px}
+#commandDetail{top:clamp(107px,21vh,177px);left:calc(5% + 207px);width:min(350px,calc(90vw - 230px));max-height:calc(100dvh - 185px);z-index:1;background:#03090cf5}
+.command-window h2{font-size:clamp(20px,2.2vw,28px);font-weight:500;letter-spacing:.12em;margin:0 0 12px;padding:0 0 10px 14px;border-bottom:1px solid #b5a78988}
+.command-window button{display:block;width:100%;min-height:44px;text-align:left;font:inherit;font-size:clamp(17px,1.8vw,23px);letter-spacing:.1em;color:var(--paper);background:transparent;border:1px solid transparent;border-radius:22px;padding:8px 16px;margin:3px 0;cursor:pointer}
+.command-window button:hover,.command-window button:focus-visible,.command-window button.active{border-color:#e9ddc3;background:#e9ddc318;outline:none}
+.command-window button.active:before{content:'◉ ';color:var(--red)}
+.command-footer{font-size:10px;letter-spacing:.15em;text-align:center;margin:14px 0 0;color:#b5a789}
+.command-window .command-back{font-size:15px;border-top:1px solid #b5a78955;border-radius:0;margin-top:10px}
+@media(max-width:600px){#commandMain{left:4%;top:88px;width:155px;padding:12px}#commandDetail{left:calc(4% + 133px);top:112px;width:calc(92vw - 133px);padding:12px;max-height:calc(100dvh - 150px)}.command-window h2{font-size:19px;padding-left:8px}.command-window button{font-size:17px;padding:8px 10px}.command-footer{font-size:8px}}
+@media(max-height:460px) and (min-width:601px){#commandMain{top:82px;left:4%;width:175px;padding:10px 14px;max-height:calc(100dvh - 103px)}#commandDetail{top:96px;left:calc(4% + 153px);width:min(340px,calc(92vw - 175px));max-height:calc(100dvh - 117px);padding:10px 14px}.command-window h2{font-size:20px;margin-bottom:5px;padding-bottom:5px}.command-window button{font-size:17px;min-height:44px;padding:6px 12px;margin:0}.command-footer{margin:5px 0 0}}
+
+/* Layout revision based on the supplied character/message reference. */
+:root{--message-height:26dvh}
+.location{top:max(0px,env(safe-area-inset-top));left:max(0px,env(safe-area-inset-left));transform:none;width:clamp(160px,27vw,340px);height:clamp(66px,12vw,140px);max-width:48%;display:flex;align-items:center;justify-content:center;padding:10px 18px;border:0;background: url('assets/ui/location-banner.png') center/100% 100% no-repeat;color:var(--paper);font-weight:900;font-style:italic;font-size:clamp(18px,2.6vw,32px);letter-spacing:.06em;text-shadow:2px 2px #020607,-1px -1px #020607;z-index:10}
+#characterStage{position:absolute;inset:auto 0 var(--message-height);height:65dvh;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+.character-card{width:34vw;height:100%;padding:0;max-width:none;filter:brightness(.48)}
+.character-card.active{filter:brightness(1)}
+.character-art{left:0;transform:none;width:100%;height:100%;max-width:none;object-fit:contain;object-position:left bottom}
+#saijiCard .character-art{object-position:right bottom}
+.dialogue{left:1%;bottom:1%;width:98%;height:var(--message-height);min-height:0;max-height:var(--message-height);padding:clamp(16px,2.3vw,34px) clamp(20px,3vw,46px);grid-template-columns:clamp(85px,11vw,170px) minmax(0,1fr);column-gap:clamp(18px,2.5vw,40px);row-gap:0;overflow:auto;clip-path:none}
+.speaker{grid-column:1;grid-row:1;border-right:1px solid #b5a78988;border-bottom:0;font-size:clamp(20px,2.5vw,34px);padding:0 12px 0 0;letter-spacing:.1em;white-space:nowrap}
+.line{grid-column:2;grid-row:1;font-size:clamp(17px,2.2vw,29px);line-height:1.65;max-height:calc(var(--message-height) - 46px);margin:0}
+.dialogue.narration{grid-template-columns:1fr}.dialogue.narration .line{grid-column:1;grid-row:1}
+#commandTitle{font-size:12px;letter-spacing:.12em;white-space:nowrap;padding-left:10px}
+#commandMain{top:clamp(90px,18vh,155px)}
+#game.deduction-layout #characterStage{display:flex!important;z-index:4}
+#game.deduction-layout .character-art{display:block}
+#game.deduction-layout .panel{inset:12% 33% calc(var(--message-height) + 3%);padding:14px;box-shadow:4px 4px #030709aa}
+#game.deduction-layout .panel h2{margin-right:0;font-size:clamp(16px,1.8vw,23px);margin:0 0 10px;padding-bottom:8px;letter-spacing:.04em}
+#game.deduction-layout .panel .close{display:none}
+#game.deduction-layout .panel button{min-width:0;width:100%;font-size:15px;padding:8px;min-height:44px}
+#game.deduction-layout .answer-groups{grid-template-columns:1fr;gap:8px;margin:8px 0}
+#game.deduction-layout .answer-preview{font-size:14px}
+#game.deduction-layout #nextMark{display:none}
+#textControls{top:12px;bottom:auto}
+@media(max-width:600px){:root{--message-height:30dvh}.location{width:47%;height:76px;font-size:19px;max-width:49%;padding:8px}.character-card{width:42vw}#characterStage{height:44dvh}.dialogue{padding:16px 14px;grid-template-columns:72px minmax(0,1fr);column-gap:12px}.speaker{font-size:19px;padding-right:7px}.line{font-size:16px;max-height:calc(var(--message-height) - 36px)}#commandTitle{font-size:9px;padding-left:4px;letter-spacing:.04em}#game.deduction-layout .panel{inset:15% 19% calc(var(--message-height) + 3%);padding:10px}#game.deduction-layout .panel h2{margin-right:0;font-size:15px}#textControls{top:80px}#game.deduction-layout .character-card{width:31vw}}
+@media(max-height:460px) and (min-width:601px){:root{--message-height:29dvh}#characterStage{height:62dvh}.character-card{width:29vw}.location{height:74px;font-size:22px}.line{font-size:16px}.speaker{font-size:21px}.dialogue{padding:12px 20px}#game.deduction-layout .panel{inset:7% 30% calc(var(--message-height) + 3%)}#game.deduction-layout .panel button{min-height:38px;font-size:14px}#commandTitle{font-size:10px}}
+
+/* Final stage layering, no-scroll text/commands and coordinated entrances. */
+:root{--message-height:27dvh;--frame-speed:.24s}
+#scene{z-index:0}.grain{z-index:1}.location,#menu{z-index:4;width:min(44vw,50dvh);height:16.667dvh;max-width:none;padding:0;transition:transform .45s ease}
+.location{background:none;display:block}.location img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}.location span{display:none}
+#characterStage{z-index:7;bottom:0;top:auto;height:66.667dvh;inset-inline:0}
+.character-card{width:min(45vw,48.2dvh);height:100%;transition:filter .15s}
+.character-art{width:100%;height:100%;object-fit:contain;object-position:center bottom}
+#characterStage.open #harukiCard{animation:characterLeft var(--frame-speed) ease .2s both}
+#characterStage.open #saijiCard{animation:characterRight var(--frame-speed) ease .2s both}
+@keyframes characterLeft{from{transform:translateX(-105%)}to{transform:translateX(0)}}
+@keyframes characterRight{from{transform:translateX(105%)}to{transform:translateX(0)}}
+.dialogue{z-index:10;background:#03090cbb;height:var(--message-height);max-height:none;overflow:hidden;transition:transform var(--frame-speed) ease,opacity var(--frame-speed) ease;grid-template-columns:clamp(75px,12vw,165px) minmax(0,1fr);padding:clamp(16px,2vw,26px) clamp(16px,2.5vw,40px);column-gap:clamp(12px,2vw,28px)}
+.line{overflow:hidden;overflow-y:hidden;max-height:none;height:auto;font-size:clamp(15px,2.2vw,28px);line-height:1.65;white-space:pre-wrap;word-break:break-all}
+.speaker{transform:none;margin:0;display:block;align-self:start;padding:0 12px 0 0;border-right:1px solid #b5a78988;border-left:0;background:none}
+.speaker img{display:block;width:100%;height:auto;max-height:70px;object-fit:contain}.speaker.empty{display:none}
+#textControls{z-index:11}
+#commandWindows{z-index:8}.command-window{background:#03090cbf;overflow:hidden;max-height:none}
+#commandDetail{background:#03090cbf;max-height:none}
+#commandChildren button{min-height:0;height:var(--command-row,38px);margin:0;padding:2px 10px;line-height:1.15;font-size:var(--command-font,17px);white-space:nowrap;letter-spacing:.02em}
+#commandChildren .command-back{margin-top:4px}
+#commandMain button{min-height:36px;padding:6px 14px;font-size:20px;margin:0}
+#opening{transition:opacity .6s ease}.opening-actions:empty{display:none}#opening.dissolve{opacity:0;pointer-events:none}
+#opening #openingSynopsis{width:min(760px,100%);max-width:760px;font-size:clamp(18px,2.2vw,28px);line-height:1.65;cursor:pointer;min-height:7em}
+#opening .next-inline{display:inline-block;position:static;vertical-align:baseline;margin:0 0 0 .4em;padding:0!important;background:none!important;border:0!important;color:var(--red);font-size:24px;min-height:0!important;min-width:0;visibility:hidden;animation:blink .85s steps(2,start) infinite}
+#opening .next-inline.ready{visibility:visible}
+#deductionStage{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.deduction-door{position:absolute;top:0;bottom:0;width:50%;background:#808080;transition:transform .65s cubic-bezier(.45,0,.15,1)}
+.deduction-door.left{left:0;transform:translateX(-100%)}.deduction-door.right{right:0;transform:translateX(100%)}
+#deductionStage.closing .deduction-door{transform:translateX(0)}
+#deductionFlash{position:absolute;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none}
+#deductionFlash.flash{animation:stageFlash .2s ease-out both}@keyframes stageFlash{from{opacity:.85}to{opacity:0}}
+#deductionStart{position:absolute;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;font-family:'Hiragino Kaku Gothic ProN','Arial Black',sans-serif;font-size:clamp(45px,9vw,130px);font-weight:1000;font-style:italic;letter-spacing:.02em;color:#eee4c9;text-shadow:4px 4px #060708,-4px -4px #060708,8px 9px #da391c}
+#deductionStart.announce{animation:announce .95s ease both}@keyframes announce{0%{opacity:0;transform:scale(1.3) rotate(-4deg)}20%,65%{opacity:1;transform:scale(1) rotate(-4deg)}100%{opacity:0;transform:scale(.97) rotate(-4deg)}}
+#game.deduction-layout .location,#game.deduction-layout #menu{transform:translateY(-120%)}
+#game.deduction-layout #characterStage{z-index:7;height:66.667dvh;bottom:0}
+#game.deduction-layout #characterStage.open .character-card{animation:none}
+#game.deduction-layout .character-card{width:min(45vw,48.2dvh)}
+#game.deduction-layout .panel{z-index:6;inset:2.5% 19% calc(var(--message-height) + 2%);padding:clamp(12px,2vw,28px);background:#000c;border:1px solid #a99f8a;box-shadow:none;overflow:hidden;animation:problemIn .24s ease both}
+@keyframes problemIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+#game.deduction-layout .panel h2{font-size:clamp(15px,1.8vw,23px);margin:0 0 10px;padding-bottom:8px}
+#game.deduction-layout .panel button:disabled{cursor:default;outline:none;opacity:.45}
+#game.deduction-layout .answer-sentence{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:8px;margin:5px 0 14px;font-size:clamp(13px,1.7vw,23px)}
+#game.deduction-layout .answer-slot{background:#e9ddc3;color:#b32d17;text-align:center;font-size:clamp(14px,2vw,26px);min-height:42px;margin:0;border:2px solid transparent;border-radius:0;white-space:normal}
+#game.deduction-layout .answer-slot.active{border-color:var(--red);box-shadow:0 0 0 2px #eadfc0}
+#game.deduction-layout .answer-slot[data-slot="2"]{grid-column:1 / 4}
+#game.deduction-layout .answer-pool{border:1px solid #b5a789;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:12px;min-height:160px}
+#game.deduction-layout .answer-option{font-size:clamp(12px,1.5vw,20px);min-height:38px;margin:0;padding:6px 4px;text-align:center;background:#091012b3;white-space:normal}
+#game.deduction-layout .answer-option.used{background:#555;color:#aaa;opacity:.55}
+#game.deduction-layout .answer-confirm{margin:12px auto 0;width:75%;text-align:center;min-height:40px}
+@media(max-width:600px){:root{--message-height:30dvh}#characterStage,#game.deduction-layout #characterStage{height:66.667dvh}.character-card,#game.deduction-layout .character-card{width:45vw}.dialogue{grid-template-columns:65px minmax(0,1fr);padding:15px 12px;column-gap:10px}.speaker img{max-height:45px}.line{font-size:16px}#commandMain button{font-size:17px;padding:5px 10px;min-height:35px}#game.deduction-layout .panel{inset:17% 6% calc(var(--message-height) + 2%);padding:10px}#game.deduction-layout .answer-pool{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:6px;min-height:0}#game.deduction-layout .answer-option{min-height:31px;font-size:12px}#game.deduction-layout .answer-sentence{gap:5px;font-size:12px;margin-bottom:9px}#game.deduction-layout .answer-slot{font-size:14px;min-height:32px}#game.deduction-layout .answer-confirm{margin-top:8px;min-height:33px}#game.deduction-layout .panel h2{font-size:14px;margin-bottom:7px}}
+@media(max-height:460px) and (min-width:601px){:root{--message-height:29dvh}#commandMain button{font-size:16px;min-height:30px;padding:3px 12px}#game.deduction-layout .panel{inset:2% 19% calc(var(--message-height) + 2%);padding:9px 16px}#game.deduction-layout .panel h2{font-size:15px;margin-bottom:5px;padding-bottom:4px}#game.deduction-layout .answer-sentence{margin:0 0 8px;gap:5px}#game.deduction-layout .answer-slot{min-height:30px;font-size:14px;padding:3px}#game.deduction-layout .answer-pool{min-height:0;gap:3px;padding:5px}#game.deduction-layout .answer-option{min-height:26px;font-size:12px;padding:2px}#game.deduction-layout .answer-confirm{min-height:28px;margin-top:6px;padding:4px}#game.deduction-layout .deduction-choice{min-height:34px;margin:3px 0!important}}
+@media(prefers-reduced-motion:reduce){#opening,.deduction-door,.location,#menu{transition:none}#characterStage.open .character-card,#deductionFlash.flash,#deductionStart.announce,.panel{animation:none!important}#opening .next-inline{animation:none}}
+
+#game.deduction-layout .dialogue.more-message #nextMark{display:block}
+
+#game.deduction-layout .panel .answer-slot{font-size:clamp(16px,2vw,26px);white-space:nowrap}
+#game.deduction-layout .panel .answer-option{font-size:clamp(14px,1.5vw,21px)}
+@media(max-width:600px){#game.deduction-layout .panel{inset:5% 6% calc(var(--message-height) + 2%)}#game.deduction-layout .panel .answer-slot{font-size:15px;min-height:32px;padding:4px;margin:0}#game.deduction-layout .panel .answer-option{font-size:12px;min-height:29px;padding:3px;margin:0}#game.deduction-layout .panel .answer-confirm{min-height:33px;padding:5px;margin-top:8px}#game.deduction-layout .answer-pool{gap:3px;padding:5px}#game.deduction-layout .answer-sentence{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto}.character-art{height:100%;width:auto;left:-15vw;max-width:none}#saijiCard .character-art{left:auto;right:-15vw}}
+@media(max-height:460px) and (min-width:601px){#game.deduction-layout .panel .answer-slot{font-size:14px;min-height:28px;padding:3px;margin:0}#game.deduction-layout .panel .answer-option{min-height:25px;font-size:12px;margin:0;padding:2px}#game.deduction-layout .panel .answer-confirm{min-height:28px;padding:4px;margin-top:6px}}
+
+#deductionStart:before{content:'';position:absolute;z-index:-1;width:80vw;height:25vw;max-height:40vh;background:url('assets/ui/location-banner.png') center/contain no-repeat}
+@media(max-width:600px){#game.deduction-layout .panel{z-index:8;background:#000b}}
+@media(max-height:360px) and (min-width:601px){#game.deduction-layout .panel .answer-slot{min-height:24px;padding:2px;font-size:12px}#game.deduction-layout .panel .answer-option{min-height:22px;padding:1px;font-size:11px}#game.deduction-layout .panel .answer-confirm{min-height:24px;padding:2px;margin-top:4px}}
+</style></head><body><main id="game" aria-label="サイカチADV 消えたスケッチ 試作版 v0.14.0"><div id="scene"><canvas id="pixelScene" width="320" height="180" aria-hidden="true"></canvas></div><div class="grain"></div><div class="title">皀角坂意匠學院</div><div class="location" id="location" aria-label="現在の場所"><img id="locationGraphic" alt=""><span id="locationName"></span></div><div id="targets"></div><div id="actions" class="actions hidden"></div><button id="menu" class="tab right" type="button" aria-label="メニュー"><img id="menuGraphic" src="assets/ui/menu.png" alt="" aria-hidden="true">メニュー</button><div class="hint">コマンドを選んで調査する</div><div id="characterStage" class="hidden" aria-hidden="true"><div id="harukiCard" class="character-card"><img class="character-art" id="harukiArt" alt="ハルキ"><span class="asset-fallback">ハルキ</span><span class="character-name">ハルキ</span><span class="emotion" id="harukiEmotion">通常</span></div><div id="saijiCard" class="character-card"><img class="character-art" id="saijiArt" alt="サイジ"><span class="asset-fallback">サイジ</span><span class="character-name">サイジ</span><span class="emotion" id="saijiEmotion">通常</span></div></div><div id="portraitRail" class="portrait-rail hidden"><span class="portrait" id="harukiFace">ハルキ</span><span class="portrait" id="saijiFace">サイジ</span></div><div id="textControls" class="hidden"><button id="speedButton" type="button">文字：ふつう</button><button id="autoButton" type="button">自動：OFF</button></div><div id="dialogue" class="dialogue hidden" role="dialog" aria-live="off"><div id="speaker" class="speaker"></div><div id="line" class="line"></div><div id="dialogueChoices"></div><span class="next" id="nextMark">▼</span></div><section id="panel" class="panel hidden" aria-label="メニュー"><button class="close" id="close">とじる</button><h2 id="panelTitle"></h2><div id="panelBody"></div></section><div id="deductionStage" class="hidden" aria-hidden="true"><div class="deduction-door left"></div><div class="deduction-door right"></div></div><div id="deductionFlash" aria-hidden="true"></div><div id="deductionStart" aria-hidden="true">推理開始！</div><section id="commandWindows" class="hidden" aria-label="調査コマンド"><section id="commandMain" class="command-window" aria-labelledby="commandTitle"><h2 id="commandTitle">DETECTIVE COMMAND</h2><div id="commandRoots"></div></section><section id="commandDetail" class="command-window hidden" aria-labelledby="commandHeading"><h2 id="commandHeading"></h2><div id="commandChildren"></div></section></section><section id="opening" aria-label="消えたスケッチ オープニング"><h1 id="openingTitle"></h1><p id="openingText"></p><p id="openingSynopsis" class="hidden"><span id="openingCopy"></span><button id="openingNext" type="button" aria-label="次へ" class="next-inline">▼</button></p><div class="opening-actions" id="openingActions"></div></section></main><script src="data/scenario.js"></script><script src="data/events.js"></script><script src="data/saves.js"></script><script>
  'use strict';
 const SCENARIO=window.SAIKACHI_SCENARIO;
 if(!SCENARIO||!SCENARIO.rooms||!SCENARIO.investigations){throw new Error('シナリオファイル data/scenario.js が読み込めません');}
@@ -192,13 +298,45 @@ function drawScene(roomId){
 const state={mode:'exploration',room:SCENARIO.initial.room,flags:{...SCENARIO.initial.flags},inventory:[],visits:{[SCENARIO.initial.room]:1},completedEvents:{},selected:null,dialogue:[],lineIndex:0,afterDialogue:null,deductionStep:0,errors:0};
 const $=id=>document.getElementById(id), room=()=>DATA.rooms[state.room];
 const textSettings={speeds:[85,37,16,0],labels:['おそい','ふつう','はやい','一瞬'],index:1,auto:false};let typingTimer=null,autoTimer=null,typingDone=false,displayedChars=0,dialogueGeneration=0;
+function setSpeaker(name){
+ const box=$('speaker');box.replaceChildren();box.setAttribute('aria-label',name);
+ if(name==='ハルキ'||name==='サイジ'){const img=document.createElement('img');img.src='assets/ui/name-'+(name==='ハルキ'?'haruki':'saiji')+'.png';img.alt=name;box.appendChild(img)}else box.textContent=name;
+ box.classList.toggle('empty',!name);
+}
+function splitMessageText(text,width,fontSize,measure){
+ const max=width>0?width:600;const pages=[];let current='',lineWidth=0,rows=1;
+ for(const char of Array.from(text)){
+  const size=char==='\n'?max:measure?measure(char):fontSize;
+  if(char==='\n'||lineWidth+size>max){if(rows===3){pages.push(current);current='';rows=1}else{current+='\n';rows++}lineWidth=0;if(char==='\n')continue}
+  current+=char;lineWidth+=size;
+ }
+ if(current)pages.push(current);return pages.length?pages:[''];
+}
+function paginateDialogue(lines){
+ if(typeof getComputedStyle!=='function')return lines;
+ const line=$('line');line.style.fontSize='';
+ const style=getComputedStyle(line),panelHeight=$('dialogue').getBoundingClientRect().height;
+ const size=Math.max(12,Math.min(parseFloat(style.fontSize)||20,(panelHeight-42)/4.95));line.style.fontSize=size+'px';
+ const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=size+'px '+style.fontFamily;
+ const spacing=parseFloat(style.letterSpacing)||0;
+ const pages=lines.flatMap(v=>{$('dialogue').classList.toggle('narration',!v[0]);const width=$('line').getBoundingClientRect().width-2;return splitMessageText(String(v[1]),width,size,c=>ctx.measureText(c).width+spacing).map(t=>[v[0],t,v[2]||'通常'])});
+ $('dialogue').classList.toggle('narration',!lines[0]?.[0]);return pages;
+}
 function cancelTextTimers(){clearTimeout(typingTimer);clearTimeout(autoTimer);typingTimer=null;autoTimer=null}
-function closeDialogueLayer(){$('dialogue').classList.remove('narration');dialogueGeneration++;cancelTextTimers();$('characterStage').classList.add('hidden');$('dialogue').classList.remove('open');$('dialogue').classList.add('hidden');$('portraitRail').classList.add('hidden');$('textControls').classList.add('hidden')}
+function closeDialogueLayer(){if(!(typeof deductionActive!=='undefined'&&deductionActive))$('characterStage').classList.remove('open');$('dialogue').classList.remove('narration');dialogueGeneration++;cancelTextTimers();$('characterStage').classList.add('hidden');$('dialogue').classList.remove('open');$('dialogue').classList.add('hidden');$('portraitRail').classList.add('hidden');$('textControls').classList.add('hidden')}
 function updateTextControls(){$('speedButton').textContent='文字：'+textSettings.labels[textSettings.index];$('autoButton').textContent='自動：'+(textSettings.auto?'ON':'OFF')}
 $('speedButton').onclick=e=>{e.stopPropagation();textSettings.index=(textSettings.index+1)%textSettings.speeds.length;updateTextControls();if(state.mode==='dialogue'&&!typingDone)displayLine()};
 $('autoButton').onclick=e=>{e.stopPropagation();textSettings.auto=!textSettings.auto;updateTextControls();scheduleAuto()};
 function scheduleAuto(){clearTimeout(autoTimer);if(textSettings.auto&&typingDone&&state.mode==='dialogue'&&!choicesPending&&!$('dialogueChoices').children.length)autoTimer=setTimeout(advance,1350)};updateTextControls();
-function render(){ $('location').textContent=room().name;$('scene').className=state.room==='corridor'?'corridor':''; drawScene(state.room);setSceneBackground(state.room);$('targets').innerHTML='';room().targets.forEach(t=>{const b=document.createElement('button');b.className='target'+(state.selected===t.id?' selected':'');b.dataset.id=t.id;b.textContent=t.name;placeTarget(b,t.id);b.addEventListener('click',e=>{e.stopPropagation();if(state.mode!=='exploration')return;state.selected=t.id;render();showActions(t.id)});$('targets').appendChild(b)});const explore=state.mode==='exploration';$('targets').classList.toggle('hidden',!explore);const showCommands=explore||state.mode==='dialogue';for(const id of ['move','menu']){$(id).classList.toggle('hidden',!showCommands);$(id).disabled=!explore;$(id).title=explore?'':'会話が終わると操作できます'}if(!state.selected||!explore)$('actions').classList.add('hidden')}
+function render(){
+ $('locationName').textContent=room().name;$('locationGraphic').src='assets/ui/location-'+state.room+'.png';$('locationGraphic').alt=room().name;$('scene').className=state.room==='corridor'?'corridor':'';
+ drawScene(state.room);setSceneBackground(state.room);
+ $('targets').replaceChildren();$('targets').classList.add('hidden');$('actions').classList.add('hidden');state.selected=null;
+ const explore=state.mode==='exploration';
+ for(const id of ['menu']){$(id).classList.toggle('hidden',!(explore||state.mode==='dialogue'));$(id).disabled=!explore;$(id).title=explore?'':'会話が終わると操作できます'}
+ $('game').classList.toggle('deduction-layout',typeof deductionActive!=='undefined'&&deductionActive);
+ if(typeof renderCommands==='function')renderCommands();if(typeof deductionActive!=='undefined'&&deductionActive&&$('panelBody').querySelectorAll){for(const b of $('panelBody').querySelectorAll('button'))b.disabled=state.mode!=='deduction'||b.classList.contains('used')}
+}
 function showActions(id){
  const a=$('actions');a.replaceChildren();const b=document.querySelector('[data-id="'+id+'"]');
  const x=document.createElement('button');x.textContent='しらべる';x.onclick=()=>examine(id);a.appendChild(x);a.classList.remove('hidden');
@@ -206,15 +344,15 @@ function showActions(id){
  a.style.left=Math.max(8,Math.min(r.left-g.left,g.width-a.offsetWidth-8))+'px';
  a.style.top=Math.max(8,Math.min(r.bottom-g.top+8,g.height-a.offsetHeight-8))+'px';
 }
-function say(lines,after=null){cancelTextTimers();state.mode='dialogue';state.dialogue=lines;state.lineIndex=0;state.afterDialogue=after;state.selected=null;$('panel').classList.add('hidden');$('actions').classList.add('hidden');$('dialogue').classList.remove('hidden');$('portraitRail').classList.remove('hidden');$('characterStage').classList.remove('hidden');$('textControls').classList.remove('hidden');const generation=++dialogueGeneration;requestAnimationFrame(()=>{if(generation===dialogueGeneration&&state.mode==='dialogue')$('dialogue').classList.add('open')});displayLine();render()}
-function displayLine(){cancelTextTimers();const v=state.dialogue[state.lineIndex];if(!v)return;const speaker=v[0],full=String(v[1]);$('speaker').textContent=speaker;$('characterStage').classList.toggle('hidden',!speaker);$('dialogue').classList.toggle('narration',!speaker);$('line').textContent='';$('line').scrollTop=0;$('nextMark').classList.remove('ready');$('dialogueChoices').replaceChildren();$('harukiFace').classList.toggle('active',speaker==='ハルキ');$('saijiFace').classList.toggle('active',speaker==='サイジ');updateCharacterCards(speaker,v[2]||'通常');typingDone=false;displayedChars=0;const chars=Array.from(full);const speed=textSettings.speeds[textSettings.index];function tick(){if(state.mode!=='dialogue')return;displayedChars=Math.min(chars.length,displayedChars+1);$('line').textContent=chars.slice(0,displayedChars).join('');if(displayedChars<chars.length){typingTimer=setTimeout(tick,speed)}else{typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}}if(speed===0||matchMedia('(prefers-reduced-motion: reduce)').matches){$('line').textContent=full;displayedChars=chars.length;typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}else tick()}
+function say(lines,after=null){cancelTextTimers();state.mode='dialogue';state.dialogue=lines;if(typeof learnCommandNames==='function')for(const v of lines)learnCommandNames(String(v[1]));state.lineIndex=0;state.afterDialogue=after;state.selected=null;if(!(typeof deductionActive!=='undefined'&&deductionActive))$('panel').classList.add('hidden');$('actions').classList.add('hidden');$('dialogue').classList.remove('hidden');$('portraitRail').classList.remove('hidden');$('characterStage').classList.remove('hidden');$('textControls').classList.remove('hidden');const generation=++dialogueGeneration;requestAnimationFrame(()=>{if(generation===dialogueGeneration&&state.mode==='dialogue'){$('dialogue').classList.add('open');$('characterStage').classList.add('open')}});$('dialogue').classList.toggle('narration',!lines[0]?.[0]);state.dialogue=paginateDialogue(lines);displayLine();render()}
+function displayLine(){cancelTextTimers();const v=state.dialogue[state.lineIndex];if(!v)return;const speaker=v[0],full=String(v[1]);$('dialogue').classList.toggle('more-message',state.mode==='deduction'&&state.lineIndex<state.dialogue.length-1);setSpeaker(speaker);if(typeof learnCommandNames==='function')learnCommandNames(full);$('characterStage').classList.toggle('hidden',!speaker&&!(typeof deductionActive!=='undefined'&&deductionActive));$('dialogue').classList.toggle('narration',!speaker);$('line').textContent='';$('line').scrollTop=0;$('nextMark').classList.remove('ready');$('dialogueChoices').replaceChildren();$('harukiFace').classList.toggle('active',speaker==='ハルキ');$('saijiFace').classList.toggle('active',speaker==='サイジ');updateCharacterCards(speaker,v[2]||'通常');typingDone=false;displayedChars=0;const chars=Array.from(full);const speed=textSettings.speeds[textSettings.index];function tick(){if(!['dialogue','deduction'].includes(state.mode))return;displayedChars=Math.min(chars.length,displayedChars+1);$('line').textContent=chars.slice(0,displayedChars).join('');if(displayedChars<chars.length){typingTimer=setTimeout(tick,speed)}else{typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}}if(speed===0||matchMedia('(prefers-reduced-motion: reduce)').matches){$('line').textContent=full;displayedChars=chars.length;typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto()}else tick()}
 function onLineCompleted(){}
-function advance(){if(state.mode!=='dialogue')return;if(choicesPending)return;if(!typingDone){cancelTextTimers();$('line').textContent=state.dialogue[state.lineIndex][1];typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto();return}cancelTextTimers();state.lineIndex++;if(state.lineIndex>=state.dialogue.length){closeDialogueLayer();state.mode='exploration';const next=state.afterDialogue;state.afterDialogue=null;if(next)next();else render()}else displayLine()}
+function advance(){if(state.mode==='deduction'){if(!typingDone){cancelTextTimers();$('line').textContent=state.dialogue[state.lineIndex][1];typingDone=true;return}if(state.lineIndex<state.dialogue.length-1){state.lineIndex++;displayLine()}return}if(state.mode!=='dialogue')return;if(choicesPending)return;if(!typingDone){cancelTextTimers();$('line').textContent=state.dialogue[state.lineIndex][1];typingDone=true;$('nextMark').classList.add('ready');onLineCompleted();scheduleAuto();return}cancelTextTimers();state.lineIndex++;if(state.lineIndex>=state.dialogue.length){if(!state.pendingDeduction&&!deductionActive)closeDialogueLayer();state.mode='exploration';const next=state.afterDialogue;state.afterDialogue=null;if(next)next();else render()}else displayLine()}
 const Events=window.SaikachiEvents;
 function runEvent(event){
- if(!event||!Events.apply(event,state))return false;
+ if(!event||!Events.apply(event,state))return false;state.pendingDeduction=!!event.deduction;
  const finish=()=>{
-  if(event.deduction){startDeduction();return}
+  if(event.deduction){state.pendingDeduction=false;startDeduction();return}
   if(event.topic){playTopic(event.topic);return}
   if(event.next){playTopic(event.next);return}
   if(event.choices){showTopicChoices(event.choices);return}
@@ -229,12 +367,12 @@ function examine(id){
 }
 function moveTo(id){
  if(!DATA.rooms[id])return;
- const changed=Events.enter(id,state);closePanel();
+ if(typeof commandSelection!=='undefined')commandSelection=null;const changed=Events.enter(id,state);closePanel();
  if(changed)runEvent(Events.select(DATA.rooms[id].onEnter||[],state));
 }
 let panelRevision=0;
-function panel(title,buttons){$('panel').scrollTop=0;panelRevision++;state.mode='menu';state.selected=null;render();$('panelTitle').textContent=title;const body=$('panelBody');body.innerHTML='';buttons.forEach(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;body.appendChild(b)});$('panel').classList.remove('hidden')}
-function closePanel(){if(!state.flags.introSeen){showTitle();return}panelRevision++;state.mode='exploration';$('panel').classList.add('hidden');render()}
+function panel(title,buttons){$('panel').scrollTop=0;panelRevision++;state.mode='menu';state.selected=null;render();$('panelTitle').textContent=title;$('panel').setAttribute('aria-label',title);const body=$('panelBody');body.innerHTML='';buttons.forEach(([label,fn])=>{const b=document.createElement('button');b.textContent=label;b.onclick=fn;body.appendChild(b)});$('panel').classList.remove('hidden')}
+function closePanel(){if(typeof deductionActive!=='undefined'&&deductionActive)return;closeDialogueLayer();if(!state.flags.introSeen){showTitle();return}panelRevision++;state.mode='exploration';$('panel').classList.add('hidden');render()}
 // 工程18: 保存はメニューから手動で行い、復帰は探索状態に統一する。
 const Saves=window.SaikachiSaves.create(SCENARIO,()=>window.localStorage);
 function saveMessage(message,back=menu){
@@ -251,7 +389,7 @@ function saveSlots(action){
   }
  }catch(e){saveMessage(e.message);return}
  buttons.push(['もどる',menu]);panel(action==='save'?'セーブ':'途中から',buttons);
- const note=document.createElement('p');note.textContent='セーブデータは3つまで、このブラウザに保存します。別端末へ移すときは「セーブの持ち運び」を使ってください。';$('panelBody').appendChild(note);
+ const note=document.createElement('p');note.textContent='セーブデータは3つまで、このブラウザに保存します。';$('panelBody').appendChild(note);
 }
 function selectSaveSlot(action,slot){
  const back=()=>saveSlots(action);
@@ -270,6 +408,7 @@ function selectSaveSlot(action,slot){
 }
 function restoreSave(saved){panelRevision++;
  let checked;try{checked=Saves.validate(saved)}catch(e){saveMessage(e.message);return}
+ if(typeof deductionActive!=='undefined'){deductionActive=false;deductionTransitionGeneration++;$('deductionStage').classList.add('hidden')}
  // 検証を完了してから置換。入室イベントや訪問回数更新は呼び出さない。
  $('opening').classList.add('hidden');
  closeDialogueLayer();choicesPending=false;typingDone=false;displayedChars=0;
@@ -278,85 +417,6 @@ function restoreSave(saved){panelRevision++;
   afterDialogue:null,deductionStep:0,errors:0});
  textSettings.index=checked.settings.textSpeed;textSettings.auto=checked.settings.auto;
  updateTextControls();$('panel').classList.add('hidden');$('actions').classList.add('hidden');render();
-}
-
-// 工程19: ファイルは端末内で処理し、検証済みの1記録だけを受け渡す。
-function transferMenu(){
- panel('セーブの持ち運び',[
-  ['今の進行を書き出す',()=>exportProgress()],
-  ['保存済みの記録を書き出す',exportSlots],
-  ['ファイルを読み込む',importPicker],['もどる',menu]
- ]);
- const note=document.createElement('p');note.textContent='JSONファイルとして保管できます。読み込み後に保存枠を選び、途中からから再開してください。';$('panelBody').appendChild(note);
-}
-function exportSlots(){
- const buttons=[];
- try{
-  for(let slot=1;slot<=3;slot++){
-   const value=Saves.raw(slot);let label='空き';
-   if(value!==null){try{const saved=Saves.decode(value);label=DATA.rooms[saved.progress.room].name+' / '+new Date(saved.savedAt).toLocaleString('ja-JP')}catch(e){label='読み込めないデータ'}}
-   buttons.push(['記録'+slot+'：'+label,()=>exportProgress(slot)]);
-  }
- }catch(e){saveMessage(e.message,transferMenu);return}
- buttons.push(['もどる',transferMenu]);panel('書き出す記録',buttons);
-}
-function exportProgress(slot){
- let url=null,link=null;
- try{
-  const saved=slot===undefined?Saves.snapshot(state,textSettings):Saves.read(slot);
-  if(!saved){saveMessage('この記録にはまだ保存されていません。',exportSlots);return}
-  const checked=Saves.validate(saved);
-  const blob=new Blob([JSON.stringify(checked,null,2)+'\n'],{type:'application/json;charset=utf-8'});
-  url=URL.createObjectURL(blob);link=document.createElement('a');link.href=url;
-  link.download='saikachi-save-'+(slot===undefined?'current':'slot'+slot)+'-'+checked.savedAt.replace(/[^0-9]/g,'')+'.json';
-  document.body.appendChild(link);link.click();
-  const release=url;setTimeout(()=>URL.revokeObjectURL(release),60000);url=null;
-  saveMessage('ファイルの書き出しをブラウザに依頼しました。ダウン途中から先にJSONファイルがあるか確認してください。',transferMenu);
- }catch(e){saveMessage('書き出せませんでした。'+e.message,transferMenu)}
- finally{if(link)link.remove();if(url)URL.revokeObjectURL(url)}
-}
-function importPicker(){
- panel('ファイルを読み込む',[['もどる',transferMenu]]);
- const label=document.createElement('label');label.textContent='セーブのJSONファイルを選択（1MBまで）';
- const input=document.createElement('input');input.type='file';input.accept='.json,application/json';
- input.style.maxWidth='100%';input.style.display='block';input.style.marginTop='12px';
- input.onchange=()=>{const file=input.files&&input.files[0];input.value='';if(file)readSaveFile(file)};
- label.appendChild(input);$('panelBody').appendChild(label);
-}
-async function readSaveFile(file){
- panel('ファイルを確認しています',[['やめる',transferMenu]]);
- const request=panelRevision;
- try{
-  if(file.size>1024*1024)throw new Error('ファイルが大きすぎます。1MB以下のセーブを選んでください。');
-  const text=await file.text();
-  if(request!==panelRevision)return;
-  if(text.length>1024*1024)throw new Error('ファイルが大きすぎます。');
-  const saved=Saves.decode(text.replace(/^\uFEFF/,''));
-  importPreview(saved);
- }catch(e){if(request===panelRevision)saveMessage('読み込めませんでした。'+e.message,importPicker)}
-}
-function importPreview(saved){
- // ボタンの操作で枠を確定するまでは、進行も保存領域も変更しない。
- const checked=Saves.validate(saved);
- const buttons=[];
- try{
-  for(let slot=1;slot<=3;slot++){
-   const exists=Saves.raw(slot)!==null;
-   buttons.push(['記録'+slot+'に保存（'+(exists?'記録あり':'空き')+'）',()=>confirmImport(checked,slot)]);
-  }
- }catch(e){saveMessage(e.message,transferMenu);return}
- buttons.push(['やめる',transferMenu]);panel('読み込む記録の確認',buttons);
- const note=document.createElement('p');note.textContent='場所：'+DATA.rooms[checked.progress.room].name+' / 保存日時：'+new Date(checked.savedAt).toLocaleString('ja-JP')+' / 持ち物：'+checked.progress.inventory.length+'点。現在のプレイは変更しません。';$('panelBody').appendChild(note);
-}
-function confirmImport(saved,slot){
- try{
-  const exists=Saves.raw(slot)!==null;
-  panel('記録'+slot+'に'+(exists?'上書き':'保存')+'しますか？',[
-   [exists?'上書きする':'保存する',()=>{
-    try{Saves.write(slot,saved);saveMessage('記録'+slot+'に取り込みました。「途中から」から再開できます。',transferMenu)}catch(e){saveMessage(e.message,transferMenu)}
-   }],['やめる',()=>importPreview(saved)]
-  ]);
- }catch(e){saveMessage(e.message,transferMenu)}
 }
 
 // v0.4: data-driven dialogue choices; placeholder portraits (not final character art)
@@ -390,6 +450,6 @@ function showTopicChoices(choices){
   render();
 }
 
-for(const id of ['move','menu']){$(id+'Graphic').addEventListener('error',()=>{$(id).classList.add('asset-missing')})}
-$('move').onclick=()=>panel('いどう',Object.entries(DATA.rooms).map(([id,r])=>[r.name,()=>moveTo(id)]));$('menu').onclick=()=>menu();$('close').onclick=closePanel;$('dialogue').onclick=e=>{if(e.target.closest('button'))return;advance()};$('game').addEventListener('click',e=>{if(e.target===$('scene')||e.target===$('pixelScene')||e.target===$('targets')||e.target.classList.contains('grain')){state.selected=null;$('actions').classList.add('hidden');render()}});window.addEventListener('resize',()=>{if(state.mode==='exploration'){render();if(state.selected)showActions(state.selected)}else{drawScene(state.room);setSceneBackground(state.room)}});document.addEventListener('keydown',e=>{if(e.isComposing)return;if((e.key==='Enter'||e.key===' ')&&state.mode==='dialogue'){if(e.target?.closest('button, input, textarea, select, [contenteditable]'))return;if(choicesPending)return;e.preventDefault();if(!e.repeat)advance()}else if(e.key==='Escape'&&['menu','deduction'].includes(state.mode))closePanel()});render();
-</script><script src="data/story-ui.js"></script></body></html>
+for(const id of ['menu']){$(id+'Graphic').addEventListener('error',()=>{$(id).classList.add('asset-missing')})}
+$('menu').onclick=()=>menu();$('close').onclick=closePanel;$('dialogue').onclick=e=>{if(e.target.closest('button'))return;advance()};$('game').addEventListener('click',e=>{if(e.target===$('scene')||e.target===$('pixelScene')||e.target===$('targets')||e.target.classList.contains('grain')){state.selected=null;$('actions').classList.add('hidden');render()}});window.addEventListener('resize',()=>{if(state.mode==='exploration'){render();if(state.selected)showActions(state.selected)}else{drawScene(state.room);setSceneBackground(state.room)}});document.addEventListener('keydown',e=>{if(e.isComposing)return;if((e.key==='Enter'||e.key===' ')&&state.mode==='dialogue'){if(e.target?.closest('button, input, textarea, select, [contenteditable]'))return;if(choicesPending)return;e.preventDefault();if(!e.repeat)advance()}else if(e.key==='Escape'&&state.mode==='exploration'&&typeof commandSelection!=='undefined'&&commandSelection){commandSelection=null;renderCommands()}else if(e.key==='Escape'&&state.mode==='menu')closePanel()});render();
+</script><script src="data/commands.js"></script><script src="data/story-ui.js"></script></body></html>

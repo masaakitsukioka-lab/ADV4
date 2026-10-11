@@ -12,69 +12,66 @@ const sandbox={document,window:{addEventListener(){},localStorage:{getItem:k=>st
 vm.createContext(sandbox);const run=c=>vm.runInContext(c,sandbox);const check=c=>assert(run(c),c);
 for(const f of ['scenario.js','events.js','saves.js'])run(fs.readFileSync(root+'/data/'+f,'utf8'));
 const html=fs.readFileSync(root+'/index.html','utf8');for(const m of html.matchAll(/<script>([\s\S]*?)<\/script>/g))run(m[1]);
+run(fs.readFileSync(root+'/data/commands.js','utf8'));
 run(fs.readFileSync(root+'/data/story-ui.js','utf8'));
 assert.deepEqual(JSON.parse(JSON.stringify(sandbox.window.SAIKACHI_SCENARIO)),JSON.parse(fs.readFileSync(root+'/data/scenario.json')));
 const end=()=>run('for(let i=0;i<100&&state.mode==="dialogue"&&!choicesPending;i++)advance()');
-const click=label=>{const b=elements.panelBody?.children.find(b=>b.textContent===label)||elements.openingActions.children.find(b=>b.textContent===label);assert(b,'missing button '+label);b.onclick({stopPropagation(){}})};
-check('state.mode==="opening"');click('最初から');for(let i=0;i<3;i++)click('つづける');click('調査をはじめる');end();check('state.mode==="exploration" && state.flags.introSeen');
-run('examine("desk")');end();check('!state.flags.layoutChecked');run('moveTo("corridor")');end();run('examine("notice")');end();check('!state.flags.dutyChecked');run('moveTo("classroom")');
-for(const id of ['window','floor','prepDoor']){run(`examine('${id}')`);end()}
-run('examine("shelf")');end();check('state.flags.sketchFound && state.inventory.length===1');run('examine("shelf")');end();check('state.inventory.length===1');
-run('examine("desk")');end();check('state.flags.layoutChecked');run('moveTo("corridor")');end();run('examine("notice")');end();check('state.flags.dutyChecked');run('moveTo("classroom");examine("shelf")');end();check('state.inventory.length===2 && !state.flags.okaboChecked');
-run('menu()');click('もちもの');click('オカボーのスケッチブック');click('しらべる');end();check('state.flags.okaboChecked && state.mode==="deduction"');
-click('ナカコ');check('state.errors===1 && state.deductionStep===0');click('調査にもどる');
-run('const saved=Saves.snapshot(state,textSettings);Saves.write(1,saved);');check('Saves.read(1).progress.flags.okaboChecked');
-run('const beforeVisits=JSON.stringify(state.visits);restoreSave(Saves.read(1))');check('JSON.stringify(state.visits)===beforeVisits && state.mode==="exploration"');
-run('menu()');click('推理を再開する');
-for(const answer of ['オカボー','果物','落書きがされていた','オカボー']){click(answer);end()}
+const allButtons=()=>{const out=[];const walk=e=>{for(const child of e?.children||[]){out.push(child);walk(child)}};for(const id of ['panelBody','commandRoots','commandChildren','openingActions'])walk(elements[id]);return out};
+const click=label=>{const b=allButtons().find(b=>b.textContent===label);assert(b,'missing button '+label);assert(!b.disabled,'disabled '+label);b.onclick({stopPropagation(){}})};
+const begin=()=>{run('showTitle()');click('最初から');for(let i=0;i<3;i++)run('advanceOpening()');end()};
+check('state.mode==="opening"');begin();check('state.mode==="exploration" && state.flags.introSeen');
+assert.equal(elements.commandRoots.children[0].textContent,'移動');
+assert.equal(elements.targets.children.length,0);
+run('Saves.write(1,Saves.snapshot(state,textSettings))');
+click('聞く');assert.equal(elements.line.textContent,'ここには誰もいない。');end();
+click('調べる');assert(!allButtons().some(b=>b.textContent==='モチーフの配置図'));
+click('机');end();click('調べる');assert(allButtons().some(b=>b.textContent==='モチーフの配置図'));
+check('!state.flags.layoutChecked');click('作品棚');end();check('state.inventory.length===1');
+click('調べる');click('作品棚');end();check('state.inventory.length===1');
+click('調べる');click('モチーフの配置図');end();check('state.flags.layoutChecked && state.flags.personOkabo');
+click('移動');click('旧校舎廊下');end();check('commandSelection===null');
+click('調べる');assert(!allButtons().some(b=>b.textContent.includes('スケッチブック')));
+click('掲示板');end();check('state.flags.dutyChecked');
+click('移動');click('美術準備室');check('commandSelection===null');
+click('調べる');click('作品棚');end();check('state.inventory.length===2');
+run('Saves.write(2,Saves.snapshot(state,textSettings))');
+const beforeChat=run('JSON.stringify(Saves.read(2).progress)');
+const chats=new Set();for(let i=0;i<10;i++){click('会話');check('state.mode==="dialogue"');chats.add(run('lastConversationId'));assert(run('SCENARIO.commands.conversations.find(t=>t.id===lastConversationId).eventRelated'));end()}
+assert(chats.size>1);assert.equal(run('JSON.stringify(Saves.snapshot(state,textSettings).progress)'),beforeChat);
+click('調べる');click('オカボーのスケッチブック');end();
+check('state.mode==="deduction" && deductionActive');
+assert(!elements.characterStage.classList.contains('hidden'));assert(!elements.dialogue.classList.contains('hidden'));
+assert(!allButtons().some(b=>b.textContent==='調査にもどる'));
+run('closePanel()');check('state.mode==="deduction" && deductionActive');
+click('ナカコ');check('state.errors===1 && state.deductionStep===0');
+for(const answer of ['オカボー','果物','落書きがされていた','オカボー']){click(answer);assert(!elements.panel.classList.contains('hidden'));end()}
 check('state.deductionStep===4 && state.mode==="deduction"');
-click('この答えで決定');check('state.mode==="deduction" && !state.flags.deductionDone');
-const groups=elements.panelBody?.children.find(e=>e.className==='answer-groups');const selects=groups.children.map(l=>l.children[0]);
-selects.forEach(s=>s.value='0');click('この答えで決定');check('state.errors===1 && !state.flags.deductionDone');
-['3','1','2'].forEach((v,i)=>selects[i].value=v);click('この答えで決定');check('state.mode==="dialogue" && !state.flags.deductionDone');end();check('state.flags.deductionDone && state.mode==="menu"');
-run('closePanel();const complete=Saves.snapshot(state,textSettings);Saves.write(2,complete);restoreSave(Saves.read(2));');check('state.flags.deductionDone');
-run('inspectItem("オカボーのスケッチブック")');end();check('state.mode==="exploration"');
-assert.throws(()=>run('Saves.decode(JSON.stringify({...saved,scenarioId:"missing-sketch-demo"}))'));
-assert.throws(()=>run('Saves.decode("bad json")'));
-assert.throws(()=>run('Saves.validate({...saved,progress:{...saved.progress,inventory:["未知の証拠"]}})'));
-// Every possible early investigation order must still allow the intended route.
-for(const order of [['notice','desk','shelf'],['desk','shelf','notice'],['shelf','notice','desk']]){
- run('closeDialogueLayer();Object.assign(state,{mode:"exploration",room:"classroom",flags:{...SCENARIO.initial.flags},inventory:[],visits:{classroom:1},completedEvents:{}})');
- for(const id of order){run(`examine('${id}')`);end()}
- for(const id of ['shelf','desk','notice','shelf']){run(`examine('${id}')`);end()}
- run('inspectItem("オカボーのスケッチブック")');end();check('state.mode==="deduction"');
-}
-console.log('PASS: opening, premature clues, optional targets, four flags, item inspections, duplicate prevention, five puzzles, incorrect/incomplete answers, ending, interruption/resume, save/load/export-compatible snapshot, old/corrupt save rejection, JS/JSON parity. DOM substitute; not a real browser test.');
-
-// Starting again after loading a completed save must clear all progress and pending dialogue.
-run('restoreSave(Saves.read(2));Object.assign(state,{selected:"shelf",dialogue:SCENARIO.ending,lineIndex:2,afterDialogue:()=>{throw Error("stale callback")},deductionStep:4,errors:3});choicesPending=true;showTitle()');
-const savedBeforeRestart=Array.from(storage.entries());
-click('最初から');
-check('state.mode==="opening" && state.room===SCENARIO.initial.room');
-assert.deepEqual(JSON.parse(run('JSON.stringify(state.flags)')),JSON.parse(run('JSON.stringify(SCENARIO.initial.flags)')));
-check('state.inventory.length===0 && Object.keys(state.completedEvents).length===0');
-assert.deepEqual(JSON.parse(run('JSON.stringify(state.visits)')),JSON.parse(run('JSON.stringify({[SCENARIO.initial.room]:1})')));
-check('state.selected===null && state.dialogue.length===0 && state.lineIndex===0 && state.afterDialogue===null && state.deductionStep===0 && state.errors===0 && !choicesPending');
-assert.equal(elements.openingText.textContent,run('SCENARIO.opening[0]'));
-assert.deepEqual(Array.from(storage.entries()),savedBeforeRestart);
-for(let i=0;i<3;i++)click('つづける');click('調査をはじめる');end();
-check('state.mode==="exploration" && state.flags.introSeen && !state.flags.deductionDone && state.inventory.length===0');
-console.log('PASS: new game after completed save resets progress, replays opening, and preserves saved slots.');
-
-// All three title-screen slots restore their own progress and settings.
-run('moveTo("corridor")');end();
-run('textSettings.index=3;textSettings.auto=true;Saves.write(3,Saves.snapshot(state,textSettings))');
-assert.throws(()=>run('Saves.write(4,Saves.read(3))'));
-assert.throws(()=>run('Saves.read(0)'));
+click('この答えで決定');check('!state.flags.deductionDone');
+const sentence=elements.panelBody.children.find(e=>e.className==='answer-sentence');const slots=sentence.children.filter(e=>e.className==='answer-slot');
+const pool=elements.panelBody.children.find(e=>e.className==='answer-pool');assert.equal(pool.children.length,12);
+const choose=(i,label)=>{slots[i].onclick();click(label)};
+choose(0,'ハルキ');choose(1,'面白がって');choose(2,'仕返し');click('この答えで決定');check('state.errors===1 && !state.flags.deductionDone');
+choose(0,'オカボー');assert(pool.children.find(b=>b.textContent==='オカボー').disabled);assert(!pool.children.find(b=>b.textContent==='ハルキ').disabled);
+const unchanged=slots[0].textContent;pool.children.find(b=>b.textContent==='オカボー').onclick();assert.equal(slots[0].textContent,unchanged);
+choose(1,'間違って');choose(2,'落書き');click('この答えで決定');end();check('state.flags.deductionDone && !deductionActive');
+run('closePanel();textSettings.index=3;textSettings.auto=true;Saves.write(3,Saves.snapshot(state,textSettings))');
 for(const slot of [1,2,3]){
- const expected=JSON.parse(run(`JSON.stringify(Saves.read(${slot}))`));
- run('showTitle()');click('途中から');
- assert.equal(elements.panelTitle.textContent,'途中から');
- const slotButtons=elements.panelBody.children.filter(b=>/^記録[1-3]：/.test(b.textContent));
- assert.equal(slotButtons.length,3);
- slotButtons[slot-1].onclick();click('再開する');
+ const expected=JSON.parse(run(`JSON.stringify(Saves.read(${slot}))`));run('showTitle()');click('途中から');
+ const b=elements.panelBody.children.find(b=>b.textContent.startsWith('記録'+slot+'：'));assert(b);b.onclick();click('再開する');
  assert.deepEqual(JSON.parse(run('JSON.stringify({room:state.room,flags:state.flags,inventory:state.inventory,visits:state.visits,completedEvents:state.completedEvents})')),expected.progress);
  assert.deepEqual(JSON.parse(run('JSON.stringify({textSpeed:textSettings.index,auto:textSettings.auto})')),expected.settings);
- check('state.mode==="exploration"');
 }
-console.log('PASS: title continue restores each of three independent saved states and settings; slots outside 1–3 rejected.');
+const storageBefore=Array.from(storage.entries());begin();assert.deepEqual(Array.from(storage.entries()),storageBefore);
+check('state.inventory.length===0 && !state.flags.deductionDone && state.visits.classroom===1');
+run('const legacy=JSON.parse(JSON.stringify(Saves.read(2)));for(const key of SCENARIO.commands.discoveryFlags)delete legacy.progress.flags[key];restoreSave(legacy)');check('state.flags.personOkabo && state.flags.layoutSeen');
+assert.throws(()=>run('Saves.write(4,Saves.read(2))'));assert.throws(()=>run('Saves.read(0)'));assert.throws(()=>run('Saves.decode("bad json")'));
+run('menu()');assert(!allButtons().some(b=>b.textContent==='セーブの持ち運び'));
+const pages=JSON.parse(run('JSON.stringify(splitMessageText("あ".repeat(100),100,10))'));
+assert.equal(pages.join('').replace(/\n/g,''),'あ'.repeat(100));assert(pages.every(p=>p.split('\n').length<=3));
+// Production transition timers preserve the dialogue and defer the problem until after the announcement.
+run('closePanel();deductionActive=false;state.flags.okaboChecked=true;state.mode="dialogue"');
+const timed=[];sandbox.matchMedia=()=>({matches:false});sandbox.setTimeout=(fn,ms)=>{timed.push({fn,ms});return timed.length};
+run('startDeduction()');check('state.mode==="deduction-transition"');assert(!elements.dialogue.classList.contains('hidden'));assert(!elements.characterStage.classList.contains('hidden'));
+for(const ms of [650,850,1850]){const task=timed.find(t=>t.ms===ms);assert(task);task.fn()}
+check('state.mode==="deduction"');
+console.log('PASS: command-only story, room-local discovery, random chat, transition ordering, no deduction exit, persistent problem window, ABC placement/disabled choices, three saves, restart, legacy saves, three-line message pagination.');

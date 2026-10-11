@@ -16,7 +16,7 @@ run(fs.readFileSync(root+'/data/story-ui.js','utf8'));
 assert.deepEqual(JSON.parse(JSON.stringify(sandbox.window.SAIKACHI_SCENARIO)),JSON.parse(fs.readFileSync(root+'/data/scenario.json')));
 const end=()=>run('for(let i=0;i<100&&state.mode==="dialogue"&&!choicesPending;i++)advance()');
 const click=label=>{const b=elements.panelBody?.children.find(b=>b.textContent===label)||elements.openingActions.children.find(b=>b.textContent===label);assert(b,'missing button '+label);b.onclick({stopPropagation(){}})};
-check('state.mode==="opening"');click('はじめる');for(let i=0;i<3;i++)click('つづける');click('調査をはじめる');end();check('state.mode==="exploration" && state.flags.introSeen');
+check('state.mode==="opening"');click('最初から');for(let i=0;i<3;i++)click('つづける');click('調査をはじめる');end();check('state.mode==="exploration" && state.flags.introSeen');
 run('examine("desk")');end();check('!state.flags.layoutChecked');run('moveTo("corridor")');end();run('examine("notice")');end();check('!state.flags.dutyChecked');run('moveTo("classroom")');
 for(const id of ['window','floor','prepDoor']){run(`examine('${id}')`);end()}
 run('examine("shelf")');end();check('state.flags.sketchFound && state.inventory.length===1');run('examine("shelf")');end();check('state.inventory.length===1');
@@ -45,3 +45,36 @@ for(const order of [['notice','desk','shelf'],['desk','shelf','notice'],['shelf'
  run('inspectItem("オカボーのスケッチブック")');end();check('state.mode==="deduction"');
 }
 console.log('PASS: opening, premature clues, optional targets, four flags, item inspections, duplicate prevention, five puzzles, incorrect/incomplete answers, ending, interruption/resume, save/load/export-compatible snapshot, old/corrupt save rejection, JS/JSON parity. DOM substitute; not a real browser test.');
+
+// Starting again after loading a completed save must clear all progress and pending dialogue.
+run('restoreSave(Saves.read(2));Object.assign(state,{selected:"shelf",dialogue:SCENARIO.ending,lineIndex:2,afterDialogue:()=>{throw Error("stale callback")},deductionStep:4,errors:3});choicesPending=true;showTitle()');
+const savedBeforeRestart=Array.from(storage.entries());
+click('最初から');
+check('state.mode==="opening" && state.room===SCENARIO.initial.room');
+assert.deepEqual(JSON.parse(run('JSON.stringify(state.flags)')),JSON.parse(run('JSON.stringify(SCENARIO.initial.flags)')));
+check('state.inventory.length===0 && Object.keys(state.completedEvents).length===0');
+assert.deepEqual(JSON.parse(run('JSON.stringify(state.visits)')),JSON.parse(run('JSON.stringify({[SCENARIO.initial.room]:1})')));
+check('state.selected===null && state.dialogue.length===0 && state.lineIndex===0 && state.afterDialogue===null && state.deductionStep===0 && state.errors===0 && !choicesPending');
+assert.equal(elements.openingText.textContent,run('SCENARIO.opening[0]'));
+assert.deepEqual(Array.from(storage.entries()),savedBeforeRestart);
+for(let i=0;i<3;i++)click('つづける');click('調査をはじめる');end();
+check('state.mode==="exploration" && state.flags.introSeen && !state.flags.deductionDone && state.inventory.length===0');
+console.log('PASS: new game after completed save resets progress, replays opening, and preserves saved slots.');
+
+// All three title-screen slots restore their own progress and settings.
+run('moveTo("corridor")');end();
+run('textSettings.index=3;textSettings.auto=true;Saves.write(3,Saves.snapshot(state,textSettings))');
+assert.throws(()=>run('Saves.write(4,Saves.read(3))'));
+assert.throws(()=>run('Saves.read(0)'));
+for(const slot of [1,2,3]){
+ const expected=JSON.parse(run(`JSON.stringify(Saves.read(${slot}))`));
+ run('showTitle()');click('途中から');
+ assert.equal(elements.panelTitle.textContent,'途中から');
+ const slotButtons=elements.panelBody.children.filter(b=>/^記録[1-3]：/.test(b.textContent));
+ assert.equal(slotButtons.length,3);
+ slotButtons[slot-1].onclick();click('再開する');
+ assert.deepEqual(JSON.parse(run('JSON.stringify({room:state.room,flags:state.flags,inventory:state.inventory,visits:state.visits,completedEvents:state.completedEvents})')),expected.progress);
+ assert.deepEqual(JSON.parse(run('JSON.stringify({textSpeed:textSettings.index,auto:textSettings.auto})')),expected.settings);
+ check('state.mode==="exploration"');
+}
+console.log('PASS: title continue restores each of three independent saved states and settings; slots outside 1–3 rejected.');

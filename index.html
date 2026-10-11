@@ -238,7 +238,7 @@ function closePanel(){if(!state.flags.introSeen){showTitle();return}panelRevisio
 // 工程18: 保存はメニューから手動で行い、復帰は探索状態に統一する。
 const Saves=window.SaikachiSaves.create(SCENARIO,()=>window.localStorage);
 function saveMessage(message,back=menu){
- panel('セーブ・ロード',[['もどる',back]]);
+ panel('セーブ・途中から',[['もどる',back]]);
  const note=document.createElement('p');note.textContent=message;$('panelBody').appendChild(note);
 }
 function saveSlots(action){
@@ -250,8 +250,8 @@ function saveSlots(action){
    buttons.push(['記録'+slot+'：'+label,()=>selectSaveSlot(action,slot)]);
   }
  }catch(e){saveMessage(e.message);return}
- buttons.push(['もどる',menu]);panel(action==='save'?'セーブ':'ロード',buttons);
- const note=document.createElement('p');note.textContent='このブラウザに保存します。別端末へ移すときは「セーブの持ち運び」を使ってください。';$('panelBody').appendChild(note);
+ buttons.push(['もどる',menu]);panel(action==='save'?'セーブ':'途中から',buttons);
+ const note=document.createElement('p');note.textContent='セーブデータは3つまで、このブラウザに保存します。別端末へ移すときは「セーブの持ち運び」を使ってください。';$('panelBody').appendChild(note);
 }
 function selectSaveSlot(action,slot){
  const back=()=>saveSlots(action);
@@ -287,7 +287,7 @@ function transferMenu(){
   ['保存済みの記録を書き出す',exportSlots],
   ['ファイルを読み込む',importPicker],['もどる',menu]
  ]);
- const note=document.createElement('p');note.textContent='JSONファイルとして保管できます。読み込み後に保存枠を選び、ロードから再開してください。';$('panelBody').appendChild(note);
+ const note=document.createElement('p');note.textContent='JSONファイルとして保管できます。読み込み後に保存枠を選び、途中からから再開してください。';$('panelBody').appendChild(note);
 }
 function exportSlots(){
  const buttons=[];
@@ -311,7 +311,7 @@ function exportProgress(slot){
   link.download='saikachi-save-'+(slot===undefined?'current':'slot'+slot)+'-'+checked.savedAt.replace(/[^0-9]/g,'')+'.json';
   document.body.appendChild(link);link.click();
   const release=url;setTimeout(()=>URL.revokeObjectURL(release),60000);url=null;
-  saveMessage('ファイルの書き出しをブラウザに依頼しました。ダウンロード先にJSONファイルがあるか確認してください。',transferMenu);
+  saveMessage('ファイルの書き出しをブラウザに依頼しました。ダウン途中から先にJSONファイルがあるか確認してください。',transferMenu);
  }catch(e){saveMessage('書き出せませんでした。'+e.message,transferMenu)}
  finally{if(link)link.remove();if(url)URL.revokeObjectURL(url)}
 }
@@ -353,7 +353,7 @@ function confirmImport(saved,slot){
   const exists=Saves.raw(slot)!==null;
   panel('記録'+slot+'に'+(exists?'上書き':'保存')+'しますか？',[
    [exists?'上書きする':'保存する',()=>{
-    try{Saves.write(slot,saved);saveMessage('記録'+slot+'に取り込みました。「ロード」から再開できます。',transferMenu)}catch(e){saveMessage(e.message,transferMenu)}
+    try{Saves.write(slot,saved);saveMessage('記録'+slot+'に取り込みました。「途中から」から再開できます。',transferMenu)}catch(e){saveMessage(e.message,transferMenu)}
    }],['やめる',()=>importPreview(saved)]
   ]);
  }catch(e){saveMessage(e.message,transferMenu)}

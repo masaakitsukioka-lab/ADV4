@@ -88,7 +88,15 @@
     "height": 941
   },
   "ui": {
-    "move": "assets/ui/move.png",
-    "menu": "assets/ui/menu.png"
+    "menu": "assets/ui/menu.png",
+    "location": "assets/ui/location-banner.png",
+    "locations": {
+      "classroom": "assets/ui/location-classroom.png",
+      "corridor": "assets/ui/location-corridor.png"
+    },
+    "speakerNames": {
+      "ハルキ": "assets/ui/name-haruki.png",
+      "サイジ": "assets/ui/name-saiji.png"
+    }
   }
 }

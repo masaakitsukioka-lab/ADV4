@@ -19,3 +19,8 @@ node tests/story.cjs
 `data/scenario.js` と `data/scenario.json` は同じ内容を保ちます。
 過去版の配布ファイル・素材・テストは履歴とともに残しています。
 単体HTMLとZIPは現行の編集用ファイルから自動更新されません。
+
+場所の追加時は、`assets/ui/location-<roomId>.png` を必ず用意します。
+`assets/ui/menu.png` を参照し、極太の文字・生成り／朱色・黒と朱色の筆跡を統一します。
+場所名は画像内に含め、roomIdと画像ファイル名を一致させます。
+キャラクター名の生成素材と場所名の生成プロンプトは `art_sources/stage-ui-prompts.json` に記録。
